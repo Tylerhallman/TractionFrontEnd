@@ -1,6 +1,5 @@
 const express = require('express');
 const path = require('path');
-const http = require('http');
 const cors = require('cors');
 
 const { connectDb }=require('./orm/index')
@@ -71,3 +70,5 @@ async function init() {
 }
 
 init();
+
+module.exports = app;
