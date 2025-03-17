@@ -41,10 +41,10 @@ app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 //         });
 // });
 
-// const port = process.env.PORT || 3000;
-// app.listen(port, () => {
-//     console.log(`Server is running on port ${port}`);
-// })
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+})
 async function assertDatabaseConnectionOk() {
     console.log(`Checking database connection...`);
     try {
