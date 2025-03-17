@@ -32,19 +32,19 @@ app.use('/store', storeRouter)
 
 app.use('/', (req, res) => res.json({ status: "ok - homePage" }));
 
-app.use((err, req, res, next) => {
-    res
-        .status(err.statusCode || err.code || 500)
-        .json({
-            message: err.message || 'Unexpected',
-            errorCode: err.errorCode ? err.errorCode : 0
-        });
-});
+// app.use((err, req, res, next) => {
+//     res
+//         .status(err.statusCode || err.code || 500)
+//         .json({
+//             message: err.message || 'Unexpected',
+//             errorCode: err.errorCode ? err.errorCode : 0
+//         });
+// });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-})
+// const port = process.env.PORT || 3000;
+// app.listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+// })
 async function assertDatabaseConnectionOk() {
     console.log(`Checking database connection...`);
     try {
