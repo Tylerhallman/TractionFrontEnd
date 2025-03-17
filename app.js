@@ -45,22 +45,22 @@ app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 // app.listen(port, () => {
 //     console.log(`Server is running on port ${port}`);
 // })
-// async function assertDatabaseConnectionOk() {
-//     console.log(`Checking database connection...`);
-//     try {
-//         await connectDb();
-//         console.log('Database connection OK!');
-//     } catch (error) {
-//         console.log('Unable to connect to the database:');
-//         process.exit(1);
-//     }
-// }
-//
-// async function init() {
-//     await assertDatabaseConnectionOk();
-//     await lightspeedCron.synchronizeProducts();
-// }
-//
-// init();
+async function assertDatabaseConnectionOk() {
+    console.log(`Checking database connection...`);
+    try {
+        await connectDb();
+        console.log('Database connection OK!');
+    } catch (error) {
+        console.log('Unable to connect to the database:');
+        process.exit(1);
+    }
+}
+
+async function init() {
+    await assertDatabaseConnectionOk();
+    await lightspeedCron.synchronizeProducts();
+}
+
+init();
 
 module.exports = app;
