@@ -1,7 +1,7 @@
 FROM node:22-alpine
-WORKDIR /app
+WORKDIR /index
 
 COPY . .
 RUN npm install
 
-ENTRYPOINT ["node", "/app/app.js"]
+ENTRYPOINT ["node", "/index/index.js"]

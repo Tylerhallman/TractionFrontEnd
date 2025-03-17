@@ -2,30 +2,26 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 
-const { connectDb }=require('./orm/index')
+const { connectDb }=require('../orm')
 
 
-const authRouter = require('./routes/auth')
-const productRouter = require('./routes/product')
-const uploadRouter = require('./routes/upload')
-const categoryRouter = require('./routes/category')
-const collectionRouter = require('./routes/collection')
-const customerRouter = require('./routes/customer')
-const settingRouter = require('./routes/setting')
-const storeRouter = require('./routes/store')
+const authRouter = require('../routes/auth')
+const productRouter = require('../routes/product')
+const uploadRouter = require('../routes/upload')
+const categoryRouter = require('../routes/category')
+const collectionRouter = require('../routes/collection')
+const customerRouter = require('../routes/customer')
+const settingRouter = require('../routes/setting')
+const storeRouter = require('../routes/store')
 
-const lightspeedCron = require('./utils/lightspeed-cron')
+const lightspeedCron = require('../utils/lightspeed-cron')
 
 const app = express();
-app.set('views', path.join(__dirname, 'views'));
 
 app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
 
 app.use('/auth', authRouter)
 app.use('/product', productRouter)
@@ -35,8 +31,6 @@ app.use('/collection', collectionRouter)
 app.use('/customer',customerRouter)
 app.use('/setting', settingRouter)
 app.use('/store', storeRouter)
-
-
 
 app.use('/', (req, res) => res.json({ status: "ok - homePage" }));
 
@@ -50,7 +44,7 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+index.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
 async function assertDatabaseConnectionOk() {
@@ -71,4 +65,4 @@ async function init() {
 
 init();
 
-module.exports = app;
+module.exports = index;
