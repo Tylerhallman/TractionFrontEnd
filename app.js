@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const { connectDb }=require('./orm/index')
 
+
 const authRouter = require('./routes/auth')
 const productRouter = require('./routes/product')
 const uploadRouter = require('./routes/upload')
@@ -49,11 +50,11 @@ app.use((err, req, res, next) => {
         });
 });
 
+;
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
-});
-
+})
 async function assertDatabaseConnectionOk() {
     console.log(`Checking database connection...`);
     try {
