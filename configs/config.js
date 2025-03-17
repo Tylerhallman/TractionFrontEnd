@@ -1,20 +1,20 @@
 require('dotenv').config();
 
 module.exports ={
-    MONGO_URL: process.env.mongo_url ,
-    MONGO_USER : process.env.mongo_user ,
-    MONGO_PASSWORD: process.env.mongo_password ,
-    MONGO_DB: process.env.mongo_db ,
+    MONGO_URL: process.env.MONGO_URL ,
+    MONGO_USER : process.env.MONGO_USER ,
+    MONGO_PASSWORD: process.env.MONGO_PASSWORD ,
+    MONGO_DB: process.env.MONGO_DB ,
 
-    JWT_SECRET_USER:process.env.access_token_secret,
-    JWT_REFRESH_SECRET_USER: process.env.refresh_token_secret,
+    JWT_SECRET_USER:process.env.ACCESS_TOKEN_SECRET,
+    JWT_REFRESH_SECRET_USER: process.env.REFRESH_TOKEN_SECRET,
 
-    ACCESS_TOKEN_LIFETIME:process.env.access_token || '600m',
-    REFRESH_TOKEN_LIFETIME:process.env.refresh_token || '600m',
+    ACCESS_TOKEN_LIFETIME:process.env.ACCESS_TOKEN || '600m',
+    REFRESH_TOKEN_LIFETIME:process.env.REFRESH_TOKEN || '600m',
 
-    LIGHTSPEED_BASE_URL: process.env.lightspeed_base_url,
-    LIGHTSPEED_API_KEY : process.env.lightspeed_api_key,
-    LIGHTSPEED_API_SECRET : process.env.lightspeed_api_secret,
+    LIGHTSPEED_BASE_URL: process.env.LIGHTSPEED_BASE_URL,
+    LIGHTSPEED_API_KEY : process.env.LIGHTSPEED_API_KEY,
+    LIGHTSPEED_API_SECRET : process.env.LIGHTSPEED_API_SECRET,
 
     ROLES:{
         STORE:1
