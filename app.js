@@ -30,7 +30,7 @@ app.use('/customer',customerRouter)
 app.use('/setting', settingRouter)
 app.use('/store', storeRouter)
 
-app.use('/', (req, res) => res.json({ status: "ok - homePage" }));
+app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 
 // app.use((err, req, res, next) => {
 //     res
