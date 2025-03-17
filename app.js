@@ -17,7 +17,6 @@ const storeRouter = require('./routes/store')
 const lightspeedCron = require('./utils/lightspeed-cron')
 
 const app = express();
-const server = http.createServer(app);
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(cors());
@@ -51,7 +50,7 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-server.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 

@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "start": "node app.js"
+  },
   "name": "boxbox",
   "version": "1.0.0",
   "dependencies": {
