@@ -1,9 +1,7 @@
 const express = require('express');
-const path = require('path');
 const cors = require('cors');
 
 const { connectDb }=require('../orm')
-
 
 const authRouter = require('../routes/auth')
 const productRouter = require('../routes/product')
@@ -44,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 3000;
-index.listen(port, () => {
+app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 })
 async function assertDatabaseConnectionOk() {
@@ -65,4 +63,4 @@ async function init() {
 
 init();
 
-module.exports = index;
+module.exports = app;
