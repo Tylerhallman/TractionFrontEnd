@@ -1,3 +1,2 @@
-const app = import("../app");
-
+const app = require("../app");
 module.exports = app;
