@@ -9,6 +9,7 @@ module.exports ={
     JWT_SECRET_USER:process.env.ACCESS_TOKEN_SECRET,
     JWT_REFRESH_SECRET_USER: process.env.REFRESH_TOKEN_SECRET,
 
+
     ACCESS_TOKEN_LIFETIME:process.env.ACCESS_TOKEN || '600m',
     REFRESH_TOKEN_LIFETIME:process.env.REFRESH_TOKEN || '600m',
 
