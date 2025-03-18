@@ -61,6 +61,7 @@ async function init() {
     await lightspeedCron.synchronizeProducts();
 }
 
+
 init();
 
 module.exports = app;
