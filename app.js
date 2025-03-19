@@ -16,7 +16,9 @@ const storeRouter = require('./routes/store')
 const lightspeedCron = require('./utils/lightspeed-cron')
 
 const app = express();
+
 app.set('views', path.join(__dirname, 'views'));
+
 app.use(cors());
 
 app.use(express.json());
@@ -35,14 +37,14 @@ app.use('/store', storeRouter)
 
 app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 
-// app.use((err, req, res, next) => {
-//     res
-//         .status(err.statusCode || err.code || 500)
-//         .json({
-//             message: err.message || 'Unexpected',
-//             errorCode: err.errorCode ? err.errorCode : 0
-//         });
-// });
+app.use((err, req, res, next) => {
+    res
+        .status(err.statusCode || err.code || 500)
+        .json({
+            message: err.message || 'Unexpected',
+            errorCode: err.errorCode ? err.errorCode : 0
+        });
+});
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
