@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const { connectDb }=require('./orm')
 
@@ -15,11 +16,13 @@ const storeRouter = require('./routes/store')
 const lightspeedCron = require('./utils/lightspeed-cron')
 
 const app = express();
-
+app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/auth', authRouter)
 app.use('/product', productRouter)
