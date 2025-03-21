@@ -10,5 +10,8 @@ module.exports = {
     },
     getUpload:async(condition)=>{
         return await Upload.findOne(condition)
+    },
+    deleteUpload: async(condition)=>{
+        return await Upload.deleteOne(condition)
     }
 }

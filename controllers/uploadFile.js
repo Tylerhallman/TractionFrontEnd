@@ -1,6 +1,7 @@
 const uploadService = require("../services/upload");
 const log = require("../utils/logger");
-const {deleteFile} = require("../utils/file")
+const { del } = require('@vercel/blob');
+const config = require('../configs/config');
 
 module.exports = {
     userUploadFile: async (req, res) => {
@@ -31,7 +32,10 @@ module.exports = {
             const {_id} = req.body
             let result = await uploadService.getUpload({_id:_id})
             if(result){
-                deleteFile(result.path)
+                del(result.path, {
+                    token: config.BLOB_READ_WRITE_TOKEN
+                });
+                await uploadService.deleteUpload({_id:_id})
             }
             log.info(`End deleteUploadFile. Data: ${JSON.stringify(result)}`);
             return res.status(200).send({
