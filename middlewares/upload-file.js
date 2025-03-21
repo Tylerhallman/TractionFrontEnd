@@ -26,15 +26,14 @@ const uploadFile = async (req, res, next) => {
             console.log('File Type:', req.file.mimetype);
             console.log('File Name:', filename);
 
-            const { filePath } = await put(filename,req.file.buffer,{
-                contentType: req.file.mimetype,
+            const { url } = await put(filename,req.file.buffer,{
                 access:"public",
-                // token:config.BLOB_READ_WRITE_TOKEN
+                token:config.BLOB_READ_WRITE_TOKEN
             });
 
             req.file_size = req.file.size;
             req.file_name = filename;
-            req.file_path = filePath;
+            req.file_path = url;
 
             next();
         } catch (uploadError) {
