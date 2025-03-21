@@ -1,35 +1,38 @@
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
+const { Blob } = require('@vercel/blob');
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const dir = path.join(__dirname,'../public','uploads');
+const blob = new Blob();
 
-        if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-        }
-
-        cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, Date.now() + ext);
-    }
-});
+const storage = multer.memoryStorage();
 
 const upload = multer({ storage: storage });
 
-const uploadFile = (req, res, next) => {
-    upload.single('file')(req, res, (err) => {
+const uploadFile = async (req, res, next) => {
+    upload.single('file')(req, res, async (err) => {
         if (err) {
             console.error(err);
             return res.status(500).json({ message: 'File upload error', error: err.message });
         }
-        req.file_size = req.file.size;
-        req.file_name = req.file.filename
-        req.file_path = path.join('public', 'uploads', req.file.filename);
-        next();
+        try {
+            const ext = path.extname(req.file.originalname);
+            const filename = Date.now() + ext;
+
+            const blobData = await blob.upload({
+                data: req.file.buffer,
+                contentType: req.file.mimetype,
+                name: filename,
+            });
+
+            req.file_size = req.file.size;
+            req.file_name = filename;
+            req.file_path = blobData.url;
+
+            next();
+        } catch (uploadError) {
+            console.error(uploadError);
+            return res.status(500).json({ message: 'Error uploading file to Vercel Blob', error: uploadError.message });
+        }
     });
 };
 
