@@ -17,6 +17,8 @@ module.exports ={
     LIGHTSPEED_API_KEY : process.env.LIGHTSPEED_API_KEY,
     LIGHTSPEED_API_SECRET : process.env.LIGHTSPEED_API_SECRET,
 
+    BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+
     ROLES:{
         STORE:1
     },
