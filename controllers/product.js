@@ -4,6 +4,7 @@ const productService = require('../services/product')
 const categoryService = require('../services/category')
 const collectionService = require('../services/collection')
 const config = require('../configs/config')
+const lightSpeed = require('../utils/lightspeed-cron')
 
 module.exports = {
     createProduct: async (req, res) => {
@@ -67,13 +68,16 @@ module.exports = {
             if (product_organization.search) data.product_organization.search = product_organization.search;
             if (product_organization.vendor) data.product_organization.vendor = product_organization.vendor;
 
+
+            data.is_math = await lightSpeed.mathLightspeedProduct(user_id,title)
+
             let product = await productService.createProduct(data);
 
             let result = await productService.getProduct({_id:product._id})
 
             log.info(`End createProduct. Data: ${JSON.stringify(result)}`);
 
-            return res.status(201).json(result);
+            return res.status(201).json(true);
         } catch (err) {
             log.error(err)
             return res.status(400).json({

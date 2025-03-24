@@ -53,6 +53,14 @@ const productSchema = new mongoose.Schema({
     identifier:{
       type: String,
     },
+    is_math:{
+      type: Boolean,
+        default: false
+    },
+    created_at:{
+      type: Date,
+      default: new Date()
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

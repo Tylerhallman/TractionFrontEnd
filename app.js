@@ -60,7 +60,7 @@ async function assertDatabaseConnectionOk() {
 
 async function init() {
     await assertDatabaseConnectionOk();
-    await lightspeedCron.synchronizeProducts();
+    // await lightspeedCron.synchronizeProducts();
 }
 
 

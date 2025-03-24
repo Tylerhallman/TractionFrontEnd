@@ -82,6 +82,39 @@ module.exports = {
                 log.error(`Error processing products: ${error.message}`);
             }
         });
+    },
+
+    mathLightspeedProduct:async (user_id,title) => {
+        log.info("Start mathLightspeedProduct");
+        let is_math = false
+        try {
+            const dealer = await userService.getUserDetail({_id:user_id});
+
+            if(dealer && dealer.cmf_id){
+                const response = await axios.get(
+                    `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?filter=Model eq ${title}`,
+                    {
+                        auth: {
+                            username: config.LIGHTSPEED_API_KEY,
+                            password: config.LIGHTSPEED_API_SECRET
+                        },
+                        headers: { "Content-Type": "application/json" }
+                    }
+                );
+                if(response && response.data && response.data.length) {
+                    is_math = true
+                }
+            }
+
+
+            log.info("End mathLightspeedProduct");
+            console.log(is_math)
+            return is_math
+
+        }catch (error) {
+            console.log(error.message);
+
+        }
     }
 };
 
