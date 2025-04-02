@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('../../configs/config')
 
-const productSchema = new mongoose.Schema({
+const lightspeedProductSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String },
     media: [
@@ -45,30 +45,30 @@ const productSchema = new mongoose.Schema({
         }
     },
     stock_number:{
-      type: String
+        type: String
     },
     quantity:{
-      type: Number
+        type: Number
     },
     identifier:{
-      type: String,
+        type: String,
     },
     is_math:{
-      type: Boolean,
+        type: Boolean,
         default: false
     },
     created_at:{
-      type: Date,
-      default: new Date()
+        type: Date,
+        default: new Date()
     },
     lightspeed_status:{
-      type: String,
+        type: String,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-}, { collection: "Product" });
+}, { collection: "LightspeedProduct" });
 
-module.exports = mongoose.model("Product", productSchema);
+module.exports = mongoose.model("LightspeedProduct", lightspeedProductSchema);

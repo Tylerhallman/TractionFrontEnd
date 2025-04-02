@@ -4,91 +4,120 @@ const cron = require("node-cron");
 const axios = require("axios");
 const userService = require('../services/user')
 const productService = require('../services/product')
+const productLightspeedService = require('../services/lightspeedProduct')
 const categoryService = require('../services/category')
 
 
 module.exports = {
-    synchronizeProducts: async () => {
-        log.info("Start synchronizeProducts");
+     synchronizeProducts :async ()=>  {
+         log.info("Start synchronizeProducts");
 
-        cron.schedule("0 3 * * *", async () => {
-            log.info("🔄 Start synchronizing products...");
+         cron.schedule("0 3 * * *", async () => {
+             log.info("🔄 Start synchronizing products...");
 
-            try {
-                let dealers = await userService.getUsers({ role: config.ROLES.STORE });
-                if (dealers && dealers.length) {
-                    for (let dealer of dealers) {
-                        if (dealer.cmf_id) {
-                            const response = await axios.get(
-                                `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}`,
-                                {
-                                    auth: {
-                                        username: config.LIGHTSPEED_API_KEY,
-                                        password: config.LIGHTSPEED_API_SECRET
-                                    },
-                                    headers: { "Content-Type": "application/json" }
-                                }
-                            );
+             try {
+                 let dealers = await userService.getUsers({ role: config.ROLES.STORE });
+                 if (dealers && dealers.length) {
+                     for (let dealer of dealers) {
+                         if (dealer.cmf_id) {
+                             const response = await axios.get(
+                                 `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}`,
+                                 {
+                                     auth: {
+                                         username: config.LIGHTSPEED_API_KEY,
+                                         password: config.LIGHTSPEED_API_SECRET
+                                     },
+                                     headers: { "Content-Type": "application/json" }
+                                 }
+                             );
 
-                            const products = response.data;
+                             const lightspeedProducts = response.data;
 
-                            let productMap = {};
+                             await productLightspeedService.deleteProducts({ user_id: dealer._id });
 
-                            for (let product of products) {
-                                let identifier = `${product.Make}-${product.Model}-${product.ModelYear}`;
+                             let lightspeedMap = new Map();
 
-                                if (!productMap[identifier]) {
-                                    productMap[identifier] = {
-                                        data: product,
-                                        quantity: 0
-                                    };
-                                }
+                             for (let product of lightspeedProducts) {
+                                 let model = product.Model.trim();
 
-                                productMap[identifier].quantity += 1;
-                            }
-                            await productService.updateMany(
-                                {
-                                    user_id: dealer._id,
-                                    identifier: { $exists: true }
-                                },
-                                {
-                                    $set: { quantity: 0 }
-                                }
-                            )
+                                 if (!lightspeedMap.has(model)) {
+                                     lightspeedMap.set(model, []);
+                                 }
+                                 lightspeedMap.get(model).push({
+                                     vin: product.VIN || null,
+                                     stockNumber: product.StockNumber || null
+                                 });
 
-                            for (let identifier in productMap) {
-                                let productData = productMap[identifier].data;
-                                let quantity = productMap[identifier].quantity;
+                                 let productData = await transformProductData(product, dealer._id);
+                                 await productLightspeedService.createProduct(productData);
+                             }
 
-                                let existingProduct = await productService.getProduct({
-                                    identifier: identifier,
-                                    user_id: dealer._id
-                                });
+                             let platformProducts = await productService.getProducts({ user_id: dealer._id });
 
-                                if (existingProduct) {
-                                    existingProduct.set({ quantity });
-                                    await existingProduct.save();
-                                } else {
-                                    let data = await transformProductData(productData, dealer._id, quantity,identifier);
-                                    await productService.createProduct(data);
-                                }
-                            }
-                        }
-                    }
-                }
+                             for (let platformProduct of platformProducts) {
+                                 let title = platformProduct.title.trim();
+                                 let matchedProducts = lightspeedMap.get(title);
 
-                log.info(`Cron synchronizeProducts end.`);
-            } catch (error) {
-                log.error(`Error processing products: ${error.message}`);
-            }
-        });
+                                 if (matchedProducts && matchedProducts.length) {
+                                     let matchedProduct = matchedProducts.shift();
+                                     let vin = matchedProduct.vin || null;
+
+                                     const updateAttribute = (key, value) => {
+                                         let updatedAttributes = platformProduct.attributes.map(attr =>
+                                             attr.key === key ? { ...attr, value } : attr
+                                         );
+                                         if (!updatedAttributes.find(attr => attr.key === key)) {
+                                             updatedAttributes.push({ key, value });
+                                         }
+                                         platformProduct.attributes = updatedAttributes;
+                                     };
+
+                                     await updateAttribute("VIN", vin);
+                                     await platformProduct.set({
+                                         is_math:true,
+                                         stock_number: matchedProduct.stockNumber,
+                                         lightspeed_status: "in stock"
+                                     });
+                                 } else {
+                                     const updateAttribute = (key, value) => {
+                                         let attr = platformProduct.attributes.find(attr => attr.key === key);
+                                         if (attr) {
+                                             attr.value = value;
+                                         } else {
+                                             platformProduct.attributes.push({ key, value });
+                                         }
+                                     };
+
+                                    await updateAttribute("VIN", null);
+                                     await platformProduct.set({
+                                         is_math:false,
+                                         stock_number: null,
+                                         lightspeed_status: "out of stock"
+                                     });
+                                 }
+
+                                 await platformProduct.save();
+                             }
+                         }
+                     }
+                 }
+
+                 log.info("Cron synchronizeProducts end.");
+             } catch (error) {
+                 log.error(`Error processing products: ${error.message}`);
+             }
+         });
     },
 
     mathLightspeedProduct:async (user_id,title) => {
         log.info("Start mathLightspeedProduct");
-        let is_math = false
         try {
             const dealer = await userService.getUserDetail({_id:user_id});
+            const result = {
+                is_math:false,
+                vin:null,
+                stock_number:null,
+            }
 
             if(dealer && dealer.cmf_id){
                 const response = await axios.get(
@@ -102,14 +131,15 @@ module.exports = {
                     }
                 );
                 if(response && response.data && response.data.length) {
-                    is_math = true
+                    result.is_math = true
+                    result.vin = response.data.VIN
+                    result.stock_number = response.data.StockNumber
                 }
             }
 
 
             log.info("End mathLightspeedProduct");
-            console.log(is_math)
-            return is_math
+            return result
 
         }catch (error) {
             console.log(error.message);
@@ -118,13 +148,14 @@ module.exports = {
     }
 };
 
-const transformProductData = async (data, userId, quantity,identifier) => {
+const transformProductData = async (data, userId) => {
     const profit = data.WebPrice - data.totalCost;
     const margin = data.WebPrice ? (profit / data.WebPrice) * 100 : 0;
     let category = await categoryService.getCategories({ title: data.MajorUnitSalesCategory });
 
     return {
-        title: `${data.Make} ${data.Model}`,
+        title: data.Model,
+        make: data.Make,
         description: data.WebDescription,
         media: [],
         pricing: {
@@ -146,19 +177,17 @@ const transformProductData = async (data, userId, quantity,identifier) => {
             { key: "Title Status", value: data.titlestatus },
             { key: "Unit Condition", value: data.unitcondition }
         ],
-        quantity: quantity,
         published: {
             online_store: false,
             facebook_page: false,
             facebook_marketplace: false
         },
         product_organization: {
-            search: `${data.Make} ${data.Model}`,
+            search: data.Model,
             category: category ? category._id : null,
             vendor: data.Manufacturer,
             collection: null
         },
-        identifier:identifier,
         stock_number: data.StockNumber,
         user_id: userId
     };

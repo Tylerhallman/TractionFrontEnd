@@ -69,7 +69,26 @@ module.exports = {
             if (product_organization.vendor) data.product_organization.vendor = product_organization.vendor;
 
 
-            data.is_math = await lightSpeed.mathLightspeedProduct(user_id,title)
+            let match = await lightSpeed.mathLightspeedProduct(user_id,title)
+            if(match){
+                data.is_math=match.is_math;
+                data.stock_number = match.stock_number;
+                if(data.attributes && data.attributes.length){
+                    let attr = data.attributes.find(attr => attr.key === "VIN");
+                    if(attr){
+                        attr.value = match.vin
+                    }else{
+                        data.attributes.push({key:"VIN", value:match.vin});
+                    }
+                }else{
+                    data.attributes = [
+                        {
+                            key: "VIN",
+                            value:data.vin
+                        }
+                    ]
+                }
+            }
 
             let product = await productService.createProduct(data);
 
