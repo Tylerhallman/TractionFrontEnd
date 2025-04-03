@@ -19,9 +19,22 @@ router
         validateTokenMiddleware,
         productController.getProduct
     )
+    .get("/getLightspeedProduct/:_id",
+        validateTokenMiddleware,
+        productController.getLightspeedProduct
+    )
+
+    .post("/findProductName",
+        validateTokenMiddleware,
+        productController.findProductName
+    )
     .get('/getAllProducts',
         validateTokenMiddleware,
         productController.getAllProducts
+    )
+    .get('/getAllLightspeedProducts',
+        validateTokenMiddleware,
+        productController.getAllLightspeedProducts
     )
     .post('/deleteProduct',
         validateTokenMiddleware,

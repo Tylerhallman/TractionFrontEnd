@@ -10,4 +10,14 @@ module.exports = {
     deleteProducts:async(condition)=>{
         return await LightspeedProduct.deleteMany(condition)
     },
+    getProducts:async(data)=>{
+        return await LightspeedProduct.find(data)
+            .populate('product_organization.category')
+            .populate('product_organization.collection');
+    },
+    getProduct:async(data)=>{
+        return await LightspeedProduct.findOne(data)
+            .populate('product_organization.category')
+            .populate('product_organization.collection');
+    },
 };

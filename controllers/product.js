@@ -1,6 +1,7 @@
 const log = require("../utils/logger");
 const errors = require("../configs/errors");
 const productService = require('../services/product')
+const productLightspeedService = require('../services/lightspeedProduct')
 const categoryService = require('../services/category')
 const collectionService = require('../services/collection')
 const config = require('../configs/config')
@@ -206,6 +207,30 @@ module.exports = {
             });
         }
     },
+    async getLightspeedProduct (req,res) {
+        try {
+            log.info(`Start getLightspeedProduct. Data: ${JSON.stringify(req.body)}`);
+            const {_id} = req.params
+            if (!_id) {
+                log.error(`${JSON.stringify(errors.NO_FIND_DATA)}`);
+                return res.status(400).json({
+                    message: errors.NO_FIND_DATA.message,
+                    errCode: errors.NO_FIND_DATA.code,
+                });
+            }
+
+            let result = await productLightspeedService.getProduct({_id: _id});
+            log.info(`End getLightspeedProduct. Data: ${JSON.stringify(result)}`);
+
+            return res.status(201).json(result);
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
     async getAllProducts (req,res){
         try {
             log.info(`Start getAllProducts. Data: ${JSON.stringify(req.body)}`);
@@ -214,6 +239,46 @@ module.exports = {
             let result = await productService.getProducts({user_id:user_id});
 
             log.info(`End getAllProducts. Data: ${JSON.stringify(result)}`);
+
+            return res.status(201).json(result);
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
+    findProductName:async(req,res)=>{
+        try {
+            log.info(`Start findProductName. Data: ${JSON.stringify(req.body)}`);
+            const {user_id} = req.user
+            const {search} = req.body;
+            let query = { user_id:user_id };
+            if (search) {
+                query.title = { $regex: search, $options: 'i' };
+            }
+            let result = await productLightspeedService.getProducts(query);
+
+            log.info(`End findProductName. Data: ${JSON.stringify(result)}`);
+
+            return res.status(201).json(result);
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
+    async getAllLightspeedProducts (req,res){
+        try {
+            log.info(`Start getAllLightspeedProducts. Data: ${JSON.stringify(req.body)}`);
+            const {user_id} = req.user
+
+            let result = await productLightspeedService.getProducts({user_id:user_id});
+
+            log.info(`End getAllLightspeedProducts. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
         } catch (err) {
