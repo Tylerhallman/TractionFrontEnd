@@ -21,9 +21,6 @@ const productSchema = new mongoose.Schema({
     cost_per_item: { type: Number },
     profit: { type: Number },
     margin: { type: Number },
-    attributes: [
-        Object
-    ],
     status: { type: Number,default: config.PRODUCT_STATUSES.DRAFT },
     published: {
         online_store: { type: Boolean },
@@ -63,6 +60,18 @@ const productSchema = new mongoose.Schema({
     },
     lightspeed_status:{
       type: String,
+    },
+    year:{
+        type:String,
+    },
+    make:{
+        type:String,
+    },
+    model:{
+        type:String,
+    },
+    vin:{
+        type: String,
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,

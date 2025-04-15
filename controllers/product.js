@@ -24,10 +24,13 @@ module.exports = {
                 cost_per_item,
                 profit,
                 margin,
-                attributes,
                 status,
                 published,
                 product_organization,
+                make,
+                model,
+                year,
+                vin,
             } = req.body;
             const {user_id} = req.user
 
@@ -56,7 +59,10 @@ module.exports = {
                 cost_per_item,
                 profit,
                 margin,
-                attributes,
+                make,
+                model,
+                year,
+                vin,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
@@ -74,21 +80,7 @@ module.exports = {
             if(match){
                 data.is_math=match.is_math;
                 data.stock_number = match.stock_number;
-                if(data.attributes && data.attributes.length){
-                    let attr = data.attributes.find(attr => attr.key === "VIN");
-                    if(attr){
-                        attr.value = match.vin
-                    }else{
-                        data.attributes.push({key:"VIN", value:match.vin});
-                    }
-                }else{
-                    data.attributes = [
-                        {
-                            key: "VIN",
-                            value:data.vin
-                        }
-                    ]
-                }
+                data.vin = match.vin;
             }
 
             let product = await productService.createProduct(data);
@@ -123,10 +115,13 @@ module.exports = {
                 cost_per_item,
                 profit,
                 margin,
-                attributes,
                 status,
                 published,
                 product_organization,
+                make,
+                model,
+                year,
+                vin,
             } = req.body;
             const {user_id} = req.user
 
@@ -155,7 +150,10 @@ module.exports = {
                 cost_per_item,
                 profit,
                 margin,
-                attributes,
+                make,
+                model,
+                year,
+                vin,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {

@@ -59,38 +59,18 @@ module.exports = {
                                  let matchedProducts = lightspeedMap.get(title);
 
                                  if (matchedProducts && matchedProducts.length) {
-                                     let matchedProduct = matchedProducts.shift();
-                                     let vin = matchedProduct.vin || null;
 
-                                     const updateAttribute = (key, value) => {
-                                         let updatedAttributes = platformProduct.attributes.map(attr =>
-                                             attr.key === key ? { ...attr, value } : attr
-                                         );
-                                         if (!updatedAttributes.find(attr => attr.key === key)) {
-                                             updatedAttributes.push({ key, value });
-                                         }
-                                         platformProduct.attributes = updatedAttributes;
-                                     };
-
-                                     await updateAttribute("VIN", vin);
                                      await platformProduct.set({
                                          is_math:true,
                                          stock_number: matchedProduct.stockNumber,
+                                         vin : matchedProduct.VIN,
                                          lightspeed_status: "in stock"
                                      });
                                  } else {
-                                     const updateAttribute = (key, value) => {
-                                         let attr = platformProduct.attributes.find(attr => attr.key === key);
-                                         if (attr) {
-                                             attr.value = value;
-                                         } else {
-                                             platformProduct.attributes.push({ key, value });
-                                         }
-                                     };
 
-                                    await updateAttribute("VIN", null);
                                      await platformProduct.set({
                                          is_math:false,
+                                         vin:null,
                                          stock_number: null,
                                          lightspeed_status: "out of stock"
                                      });
@@ -155,9 +135,8 @@ const transformProductData = async (data, userId) => {
 
     return {
         title: data.Model,
-        make: data.Make,
         description: data.WebDescription,
-        media: [],
+        media: data.Images && data.Images.length ? data.Images.map(item=>({path:item.ImageUrl})) : null,
         pricing: {
             price: data.WebPrice,
             sale_price: data.DSRP
@@ -169,14 +148,10 @@ const transformProductData = async (data, userId) => {
         cost_per_item: data.totalCost,
         profit: profit,
         margin: margin,
-        attributes: [
-            { key: "Condition", value: data.Condition },
-            { key: "Year", value: data.ModelYear },
-            { key: "VIN", value: data.VIN },
-            { key: "Type", value: data.UnitType },
-            { key: "Title Status", value: data.titlestatus },
-            { key: "Unit Condition", value: data.unitcondition }
-        ],
+        year:data.ModelYear,
+        make:data.Make,
+        model:data.Model,
+        vin:data.VIN,
         published: {
             online_store: false,
             facebook_page: false,
