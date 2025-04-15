@@ -112,12 +112,10 @@ module.exports = {
                 );
                 if(response && response.data && response.data.length) {
                     result.is_math = true
-                    result.vin = response.data.VIN
-                    result.stock_number = response.data.StockNumber
+                    result.vin = response.data[0].VIN
+                    result.stock_number = response.data[0].StockNumber
                 }
             }
-
-
             log.info("End mathLightspeedProduct");
             return result
 
