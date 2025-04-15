@@ -136,7 +136,7 @@ const transformProductData = async (data, userId) => {
     return {
         title: data.Model,
         description: data.WebDescription,
-        media: data.Images && data.Images.length ? data.Images.map(item=>({path:item.ImageUrl})) : null,
+        media: data.Images && data.Images.length ? data.Images.map(item=>({path:item.ImageUrl})) : [],
         pricing: {
             price: data.WebPrice,
             sale_price: data.DSRP
