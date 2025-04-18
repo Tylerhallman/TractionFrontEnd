@@ -100,7 +100,6 @@ module.exports = {
             }
             if(dealer && dealer.cmf_id){
                 const url = `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?$filter=Model eq '${title}'`
-                console.log(url)
                 const response = await axios.get(
                     url,
                     {
