@@ -42,10 +42,10 @@ module.exports = {
                     errCode: errors.NOT_ALL_DATA.code,
                 });
             }
-            let categoryId = product_organization.category._id ? product_organization.category._id :
-                (await categoryService.createCategory({ title: product_organization.category.title, user_id: user_id }))?._id;
-            let collectionId = product_organization.collection._id ? product_organization.collection._id :
-                (await collectionService.createCollection({ title: product_organization.collection.title, user_id: user_id }))?._id;
+            let categoryId = product_organization.category._id ? product_organization.category._id : null
+                // (await categoryService.createCategory({ title: product_organization.category.title, user_id: user_id }))?._id;
+            let collectionId = product_organization.collection._id ? product_organization.collection._id : null
+                // (await collectionService.createCollection({ title: product_organization.collection.title, user_id: user_id }))?._id;
 
             let data = {
                 title,
