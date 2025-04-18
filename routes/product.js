@@ -23,7 +23,6 @@ router
         validateTokenMiddleware,
         productController.getLightspeedProduct
     )
-
     .post("/findProductName",
         validateTokenMiddleware,
         productController.findProductName

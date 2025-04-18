@@ -98,10 +98,11 @@ module.exports = {
                 vin:null,
                 stock_number:null,
             }
-
+            const filterExpr = `Model eq '${title}'`;
+            const encodedFilter = encodeURIComponent(filterExpr);
             if(dealer && dealer.cmf_id){
                 const response = await axios.get(
-                    `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?filter=Model eq ${title}`,
+                    `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?&filter=Model eq ${encodedFilter}`,
                     {
                         auth: {
                             username: config.LIGHTSPEED_API_KEY,
