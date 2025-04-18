@@ -291,8 +291,8 @@ module.exports = {
         try {
             log.info(`Start deleteProduct. Data: ${JSON.stringify(req.body)}`);
             const {_id} = req.body
-            let product = await productService.getProduct({where:{_id:_id}});
-            if(product && product.status == config.PRODUCT_STATUSES.ACTIVE || product && product.status == config.PRODUCT_STATUSES.DRAFT){
+            let product = await productService.getProduct({_id:_id});
+            if(product && product.status === config.PRODUCT_STATUSES.ACTIVE || product && product.status === config.PRODUCT_STATUSES.DRAFT){
                 await  productService.updateProduct({status:config.PRODUCT_STATUSES.ARCHIVED}, {_id:_id});
             }else{
                 await productService.deleteProduct({_id:_id});
