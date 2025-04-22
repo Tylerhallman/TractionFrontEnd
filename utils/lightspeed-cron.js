@@ -55,27 +55,27 @@ module.exports = {
                              let platformProducts = await productService.getProducts({ user_id: dealer._id });
 
                              for (let platformProduct of platformProducts) {
-                                 let title = platformProduct.title.trim();
-                                 let matchedProducts = lightspeedMap.get(title);
+                                 let make = platformProduct.make.trim().toLowerCase();
+                                 let model = platformProduct.model.trim().toLowerCase();
+                                 let key = `${make}|${model}`;
+                                 let matchedProducts = lightspeedMap.get(key);
+                                 let matchedProduct = matchedProducts ? matchedProducts[0] : null;
 
-                                 if (matchedProducts && matchedProducts.length) {
-
+                                 if (matchedProduct) {
                                      await platformProduct.set({
-                                         is_math:true,
+                                         is_math: true,
                                          stock_number: matchedProduct.stockNumber,
-                                         vin : matchedProduct.VIN,
+                                         vin: matchedProduct.vin,
                                          lightspeed_status: "in stock"
                                      });
                                  } else {
-
                                      await platformProduct.set({
-                                         is_math:false,
-                                         vin:null,
+                                         is_math: false,
+                                         vin: null,
                                          stock_number: null,
                                          lightspeed_status: "out of stock"
                                      });
                                  }
-
                                  await platformProduct.save();
                              }
                          }
@@ -89,7 +89,7 @@ module.exports = {
          });
     },
 
-    mathLightspeedProduct:async (user_id,title) => {
+    mathLightspeedProduct:async (user_id,make,model) => {
         log.info("Start mathLightspeedProduct");
         try {
             const dealer = await userService.getUserDetail({_id:user_id});
@@ -99,7 +99,7 @@ module.exports = {
                 stock_number:null,
             }
             if(dealer && dealer.cmf_id){
-                const url = `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?$filter=Model eq '${title}'`
+                const url = `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?$filter=Model eq '${make}?filter=Make eq '${model}'`
                 const response = await axios.get(
                     url,
                     {
@@ -132,7 +132,7 @@ const transformProductData = async (data, userId) => {
     let category = await categoryService.getCategories({ title: data.MajorUnitSalesCategory });
 
     return {
-        title: data.Model,
+        title:`${data.Make} ${data.Model}`,
         description: data.WebDescription,
         media: data.Images && data.Images.length ? data.Images.map(item=>({path:item.ImageUrl})) : [],
         pricing: {

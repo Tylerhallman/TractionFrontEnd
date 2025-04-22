@@ -76,7 +76,7 @@ module.exports = {
             if (product_organization.vendor) data.product_organization.vendor = product_organization.vendor;
 
 
-            let match = await lightSpeed.mathLightspeedProduct(user_id,title)
+            let match = await lightSpeed.mathLightspeedProduct(user_id,make,model)
             if(match){
                 data.is_math=match.is_math;
                 data.stock_number = match.stock_number;
