@@ -38,12 +38,15 @@ module.exports = {
                              let lightspeedMap = new Map();
 
                              for (let product of lightspeedProducts) {
-                                 let model = product.Model.trim();
+                                 let make = product.Make?.trim().toLowerCase() || '';
+                                 let model = product.Model?.trim().toLowerCase() || '';
+                                 let key = `${make}|${model}`;
 
-                                 if (!lightspeedMap.has(model)) {
-                                     lightspeedMap.set(model, []);
+                                 if (!lightspeedMap.has(key)) {
+                                     lightspeedMap.set(key, []);
                                  }
-                                 lightspeedMap.get(model).push({
+
+                                 lightspeedMap.get(key).push({
                                      vin: product.VIN || null,
                                      stockNumber: product.StockNumber || null
                                  });
