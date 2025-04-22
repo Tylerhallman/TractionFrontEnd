@@ -99,7 +99,7 @@ module.exports = {
                 stock_number:null,
             }
             if(dealer && dealer.cmf_id){
-                const url = `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?$filter=Model eq '${make}?filter=Make eq '${model}'`
+                const url = `${config.LIGHTSPEED_BASE_URL}Unit/${dealer.cmf_id}?$filter=Model eq '${make}&filter=Make eq '${model}'`
                 const response = await axios.get(
                     url,
                     {
