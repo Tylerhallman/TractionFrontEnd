@@ -13,11 +13,11 @@ module.exports = {
     getProducts:async(data)=>{
         return await LightspeedProduct.find(data)
             .populate('product_organization.category')
-            .populate('product_organization.collection');
+            .populate('product_organization.type');
     },
     getProduct:async(data)=>{
         return await LightspeedProduct.findOne(data)
             .populate('product_organization.category')
-            .populate('product_organization.collection');
+            .populate('product_organization.type');
     },
 };

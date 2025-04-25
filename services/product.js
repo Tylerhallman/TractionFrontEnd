@@ -10,12 +10,12 @@ module.exports = {
     getProduct:async(data)=>{
         return await Product.findOne(data)
             .populate('product_organization.category')
-            .populate('product_organization.collection');
+            .populate('product_organization.type');
     },
     getProducts:async(data)=>{
         return await Product.find(data)
             .populate('product_organization.category')
-            .populate('product_organization.collection');
+            .populate('product_organization.type');
     },
     updateProduct:async(data,condition)=>{
         return await Product.updateOne(condition,{$set:data})

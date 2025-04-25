@@ -3,7 +3,7 @@ const userService = require('../services/user')
 const productService = require('../services/product')
 const errors = require("../configs/errors");
 const config = require("../configs/config");
-const collectionService = require("../services/collection");
+const typeService = require("../services/type");
 const categoryService = require("../services/category");
 
 module.exports = {
@@ -87,14 +87,14 @@ module.exports = {
             });
         }
     },
-    async getCollections(req,res){
+    async getType(req,res){
         try {
-            log.info(`Start getCollections. Data: ${JSON.stringify(req.body)}`);
+            log.info(`Start getType. Data: ${JSON.stringify(req.body)}`);
             const search = req.body.search || req.query.search
 
-            let result = await collectionService.getCollections({},search);
+            let result = await typeService.getType({},search);
 
-            log.info(`End getCollections. Data: ${JSON.stringify(result)}`);
+            log.info(`End getType. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
         } catch (err) {

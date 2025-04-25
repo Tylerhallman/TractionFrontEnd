@@ -6,8 +6,9 @@ module.exports = {
         try {
             log.info(`Start getAllCategory. Data: ${JSON.stringify(req.body)}`);
             const search = req.body.search || req.query.search
+            const type = req.body.type || req.query.type;
 
-            let result = await categoryService.getCategories({},search);
+            let result = await categoryService.getCategories({},search,type);
 
             log.info(`End getAllCategory. Data: ${JSON.stringify(result)}`);
 

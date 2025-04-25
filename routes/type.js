@@ -2,18 +2,18 @@ const express = require('express');
 const router = express.Router();
 
 
-const collectionRouter = require('../controllers/collection');
+const typeRouter = require('../controllers/type');
 const validateTokenMiddleware = require('../middlewares/valid-token');
 
 router
 
-    .post('/getAllCollection',
+    .post('/getAllType',
         validateTokenMiddleware,
-        collectionRouter.getAllCollection
+        typeRouter.getAllType
     )
-    .get('/getAllCollection',
+    .get('/getAllType',
         validateTokenMiddleware,
-        collectionRouter.getAllCollection
+        typeRouter.getAllType
     )
 
 

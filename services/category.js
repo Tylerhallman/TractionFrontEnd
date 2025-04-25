@@ -12,11 +12,14 @@ module.exports = {
         if(!category) category = await Category.create(data)
         return category
     },
-    getCategories: async (data, filter) => {
+    getCategories: async (data, filter,type) => {
         let query = { ...data };
 
         if (filter) {
             query.title = { $regex: filter, $options: 'i' };
+        }
+        if(type) {
+            query.type = type;
         }
 
         return  await Category.find(query);

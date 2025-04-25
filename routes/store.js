@@ -15,8 +15,8 @@ router
     .get('/getProduct/:_id',
         storeController.getProduct
     )
-    .get('/getCollections',
-        storeController.getCollections
+    .get('/getType',
+        storeController.getType
     )
     .get('/getCategories',
         storeController.getCategories

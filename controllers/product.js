@@ -3,7 +3,7 @@ const errors = require("../configs/errors");
 const productService = require('../services/product')
 const productLightspeedService = require('../services/lightspeedProduct')
 const categoryService = require('../services/category')
-const collectionService = require('../services/collection')
+const typeService = require('../services/type')
 const config = require('../configs/config')
 const lightSpeed = require('../utils/lightspeed-cron')
 
@@ -31,11 +31,17 @@ module.exports = {
                 model,
                 year,
                 vin,
+                callouts,
+                banner_content,
+                feature,
+                tech_specs,
+                warranty_content,
+                warranty_link,
             } = req.body;
             const {user_id} = req.user
 
 
-            if (!title  || !user_id ||!product_organization ||!product_organization.category || !product_organization.collection) {
+            if (!title  || !user_id ||!product_organization ||!product_organization.category || !product_organization.type) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
                 return res.status(400).json({
                     message: errors.NOT_ALL_DATA.message,
@@ -43,9 +49,7 @@ module.exports = {
                 });
             }
             let categoryId = product_organization.category._id ? product_organization.category._id : null
-                // (await categoryService.createCategory({ title: product_organization.category.title, user_id: user_id }))?._id;
-            let collectionId = product_organization.collection._id ? product_organization.collection._id : null
-                // (await collectionService.createCollection({ title: product_organization.collection.title, user_id: user_id }))?._id;
+            let typeId = product_organization.type._id ? product_organization.type._id : null
 
             let data = {
                 title,
@@ -63,11 +67,17 @@ module.exports = {
                 model,
                 year,
                 vin,
+                callouts,
+                banner_content,
+                feature,
+                tech_specs,
+                warranty_content,
+                warranty_link,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
                     category: categoryId,
-                    collection: collectionId
+                    type: typeId
                 },
                 user_id
             };
@@ -122,21 +132,25 @@ module.exports = {
                 model,
                 year,
                 vin,
+                callouts,
+                banner_content,
+                feature,
+                tech_specs,
+                warranty_content,
+                warranty_link,
             } = req.body;
             const {user_id} = req.user
 
 
-            if (!_id ||!title  || !user_id ||!product_organization ||!product_organization.category || !product_organization.collection) {
+            if (!_id ||!title  || !user_id ||!product_organization ||!product_organization.category || !product_organization.type) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
                 return res.status(400).json({
                     message: errors.NOT_ALL_DATA.message,
                     errCode: errors.NOT_ALL_DATA.code,
                 });
             }
-            let categoryId = product_organization.category._id ? product_organization.category._id :
-                (await categoryService.createCategory({ title: product_organization.category.title, user_id: user_id }))?._id;
-            let collectionId = product_organization.collection._id ? product_organization.collection._id :
-                (await collectionService.createCollection({ title: product_organization.collection.title, user_id: user_id }))?._id;
+            let categoryId = product_organization.category._id ? product_organization.category._id : null
+            let typeId = product_organization.type._id ? product_organization.type._id : null
 
             let data = {
                 title,
@@ -154,11 +168,17 @@ module.exports = {
                 model,
                 year,
                 vin,
+                callouts,
+                banner_content,
+                feature,
+                tech_specs,
+                warranty_content,
+                warranty_link,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
                     category: categoryId,
-                    collection: collectionId
+                    type: typeId
                 },
                 user_id
             };

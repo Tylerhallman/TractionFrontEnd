@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
-const collectionSchema = new mongoose.Schema({
+const typeSchema = new mongoose.Schema({
     title: { type: String, required: true },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-}, { collection: "Collection" });
+}, { collection: "Type" });
 
-module.exports = mongoose.model("Collection", collectionSchema);
+module.exports = mongoose.model("Type", typeSchema);

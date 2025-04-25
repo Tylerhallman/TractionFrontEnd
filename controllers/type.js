@@ -1,15 +1,15 @@
 const log = require("../utils/logger");
-const collectionService = require('../services/collection')
+const typeService = require('../services/type')
 
 module.exports = {
-    async getAllCollection (req,res){
+    async getAllType (req,res){
         try {
-            log.info(`Start getAllCollection. Data: ${JSON.stringify(req.body)}`);
+            log.info(`Start getAllType. Data: ${JSON.stringify(req.body)}`);
             const search = req.body.search || req.query.search
 
-            let result = await collectionService.getCollections({},search);
+            let result = await typeService.getType({},search);
 
-            log.info(`End getAllCollection. Data: ${JSON.stringify(result)}`);
+            log.info(`End getAllType. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
         } catch (err) {

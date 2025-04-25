@@ -165,6 +165,12 @@ const transformProductData = async (data, userId) => {
             collection: null
         },
         stock_number: data.StockNumber,
-        user_id: userId
+        user_id: userId,
+        callouts : data.Comments ? data.Comments : (data.WebTitle ? data.WebTitle : (data.Condition ? data.Condition :null)),
+        banner_content : data.CodeName ? data.CodeName : null,
+        feature : data.HullConstruction ? data.HullConstruction : null,
+        tech_specs : `${data.Length} ${data.FuelType} ${data.HP} ${data.Engine1displacement} ${data.Cylinders}`,
+        warranty_content : data.servicecontractterm,
+        warranty_link : null
     };
 };

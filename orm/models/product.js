@@ -36,9 +36,9 @@ const productSchema = new mongoose.Schema({
         vendor: {
             type: String,
         },
-        collection: {
+        type: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Collection',
+            ref: 'Type',
         }
     },
     stock_number:{
@@ -71,6 +71,24 @@ const productSchema = new mongoose.Schema({
         type:String,
     },
     vin:{
+        type: String,
+    },
+    callouts:{
+        type:String,
+    },
+    banner_content:{
+        type: String
+    },
+    feature:{
+        type: String,
+    },
+    tech_specs:{
+        type: String,
+    },
+    warranty_content:{
+        type: String
+    },
+    warranty_link:{
         type: String,
     },
     user_id: {

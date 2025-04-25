@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 require('./models/user')
 require('./models/product')
-require('./models/collection')
+require('./models/type')
 require('./models/category')
 require('./models/upload')
 require('./models/customer')
