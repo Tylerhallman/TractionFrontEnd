@@ -38,8 +38,8 @@ module.exports = {
                              let lightspeedMap = new Map();
 
                              for (let product of lightspeedProducts) {
-                                 let make = product.Make?.trim().toLowerCase() || '';
-                                 let model = product.Model?.trim().toLowerCase() || '';
+                                 let make = product.Make || '';
+                                 let model = product.Model || '';
                                  let key = `${make}|${model}`;
 
                                  if (!lightspeedMap.has(key)) {
@@ -58,8 +58,8 @@ module.exports = {
                              let platformProducts = await productService.getProducts({ user_id: dealer._id });
 
                              for (let platformProduct of platformProducts) {
-                                 let make = platformProduct.make.trim().toLowerCase();
-                                 let model = platformProduct.model.trim().toLowerCase();
+                                 let make = platformProduct.make;
+                                 let model = platformProduct.model;
                                  let key = `${make}|${model}`;
                                  let matchedProducts = lightspeedMap.get(key);
                                  let matchedProduct = matchedProducts ? matchedProducts[0] : null;
