@@ -289,6 +289,28 @@ module.exports = {
             });
         }
     },
+    findProduct:async(req,res)=>{
+        try {
+            log.info(`Start findProduct. Data: ${JSON.stringify(req.body)}`);
+            const {user_id} = req.user
+            const {search} = req.body;
+            let query = { user_id:user_id };
+            if (search) {
+                query.title = { $regex: search, $options: 'i' };
+            }
+            let result = await productService.getProducts(query);
+
+            log.info(`End findProduct. Data: ${JSON.stringify(result)}`);
+
+            return res.status(201).json(result);
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
     async getAllLightspeedProducts (req,res){
         try {
             log.info(`Start getAllLightspeedProducts. Data: ${JSON.stringify(req.body)}`);

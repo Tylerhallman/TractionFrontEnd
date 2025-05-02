@@ -27,6 +27,10 @@ router
         validateTokenMiddleware,
         productController.findProductName
     )
+    .post('/findProduct',
+        validateTokenMiddleware,
+        productController.findProduct
+    )
     .get('/getAllProducts',
         validateTokenMiddleware,
         productController.getAllProducts
