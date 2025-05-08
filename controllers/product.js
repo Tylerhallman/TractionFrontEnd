@@ -87,8 +87,9 @@ module.exports = {
 
 
             let match = await lightSpeed.mathLightspeedProduct(user_id,make,model)
+            console.log(match,'2623626262623')
             if(match){
-                data.is_math=match.is_math;
+                data.is_math = match.is_math;
                 data.stock_number = match.stock_number;
                 data.vin = match.vin;
             }
@@ -130,8 +131,10 @@ module.exports = {
                 product_organization,
                 make,
                 model,
+                is_match,
                 year,
                 vin,
+                stock_number,
                 callouts,
                 banner_content,
                 feature,
@@ -149,6 +152,7 @@ module.exports = {
                     errCode: errors.NOT_ALL_DATA.code,
                 });
             }
+
             let categoryId = product_organization.category._id ? product_organization.category._id : null
             let typeId = product_organization.type._id ? product_organization.type._id : null
 
@@ -167,7 +171,9 @@ module.exports = {
                 make,
                 model,
                 year,
+                stock_number,
                 vin,
+                is_match,
                 callouts,
                 banner_content,
                 feature,
