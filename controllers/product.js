@@ -37,6 +37,9 @@ module.exports = {
                 tech_specs,
                 warranty_content,
                 warranty_link,
+                gallery_1,
+                gallery_2,
+                gallery_3
             } = req.body;
             const {user_id} = req.user
 
@@ -73,6 +76,9 @@ module.exports = {
                 tech_specs,
                 warranty_content,
                 warranty_link,
+                gallery_1,
+                gallery_2,
+                gallery_3,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
@@ -141,6 +147,9 @@ module.exports = {
                 tech_specs,
                 warranty_content,
                 warranty_link,
+                gallery_1,
+                gallery_2,
+                gallery_3,
             } = req.body;
             const {user_id} = req.user
 
@@ -180,6 +189,9 @@ module.exports = {
                 tech_specs,
                 warranty_content,
                 warranty_link,
+                gallery_1,
+                gallery_2,
+                gallery_3,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {

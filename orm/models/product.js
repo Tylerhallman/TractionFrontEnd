@@ -91,6 +91,15 @@ const productSchema = new mongoose.Schema({
     warranty_link:{
         type: String,
     },
+    gallery_1:{
+        type: Object,
+    },
+    gallery_2:{
+        type: Object,
+    },
+    gallery_3:{
+        type: Object,
+    },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
