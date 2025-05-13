@@ -205,6 +205,7 @@ module.exports = {
             if (product_organization.vendor) data.product_organization.vendor = product_organization.vendor;
 
             await productService.updateProduct(data,{_id:_id});
+            await productLightspeedService.updateProduct({is_math:true},{make:make,model:model,vin:vin,stock_number:stock_number})
 
             let result = await productService.getProduct({_id:_id})
 

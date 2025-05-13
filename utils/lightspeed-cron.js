@@ -82,6 +82,12 @@ module.exports = {
                                  await platformProduct.save();
                              }
                          }
+                         let matchProducts = await productService.getProducts({ user_id: dealer._id ,is_math:true});
+                         if(matchProducts && matchProducts.length){
+                             for(let product of matchProducts) {
+                                 await productLightspeedService.updateProduct({is_math:true},{make:product.make,model:product.model,vin:product.vin,stock_number:product.stock_number})
+                             }
+                         }
                      }
                  }
 

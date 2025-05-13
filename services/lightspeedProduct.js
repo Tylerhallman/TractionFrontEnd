@@ -20,4 +20,7 @@ module.exports = {
             .populate('product_organization.category')
             .populate('product_organization.type');
     },
+    updateProduct:async(data,condition)=>{
+        return await LightspeedProduct.updateOne(condition,{$set:data})
+    },
 };
