@@ -12,6 +12,7 @@ module.exports = {
     },
     getProducts:async(data)=>{
         return await LightspeedProduct.find(data)
+            .sort({ is_math: 1 })
             .populate('product_organization.category')
             .populate('product_organization.type');
     },
