@@ -93,7 +93,12 @@ module.exports = {
             const search = req.body.search || req.query.search
 
             let result = await typeService.getType({},search);
-
+            result = await Promise.all(result.map(async (item) => {
+                const obj = item.toObject();
+                const category = await categoryService.getCategories(null, null, item._id);
+                obj.category = category;
+                return obj;
+            }));
             log.info(`End getType. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
