@@ -351,16 +351,21 @@ module.exports = {
     async deleteProduct(req,res) {
         try {
             log.info(`Start deleteProduct. Data: ${JSON.stringify(req.body)}`);
-            const {_id} = req.body
-            let product = await productService.getProduct({_id:_id});
-            if(product && product.status === config.PRODUCT_STATUSES.ACTIVE || product && product.status === config.PRODUCT_STATUSES.DRAFT){
-                await  productService.updateProduct({status:config.PRODUCT_STATUSES.ARCHIVED}, {_id:_id});
-            }else{
-                await productService.deleteProduct({_id:_id});
+            const {_ids} = req.body
+            if(_ids && _ids.length){
+                for(let _id of _ids){
+                    let product = await productService.getProduct({_id:_id});
+                    if(product && product.status === config.PRODUCT_STATUSES.ACTIVE || product && product.status === config.PRODUCT_STATUSES.DRAFT){
+                        await  productService.updateProduct({status:config.PRODUCT_STATUSES.ARCHIVED}, {_id:_id});
+                    }else{
+                        await productService.deleteProduct({_id:_id});
+                    }
+                }
             }
+
             log.info(`End deleteProduct`);
 
-            return res.status(201).json({delete:_id});
+            return res.status(201).json({delete:_ids});
         } catch (err) {
             log.error(err)
             return res.status(400).json({
