@@ -15,6 +15,10 @@ const leadSchema = new mongoose.Schema({
     },
     product:{
         type: Object
+    },
+    created_at:{
+        type: Date,
+        default: Date.now
     }
 }, { collection: "Lead" });
 
