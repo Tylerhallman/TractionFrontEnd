@@ -5,6 +5,7 @@ const errors = require("../configs/errors");
 const config = require("../configs/config");
 const typeService = require("../services/type");
 const categoryService = require("../services/category");
+const leadService = require("../services/lead");
 
 module.exports = {
     async getStore (req,res){
@@ -118,6 +119,46 @@ module.exports = {
             let result = await categoryService.getCategories({},search);
 
             log.info(`End getCategories. Data: ${JSON.stringify(result)}`);
+
+            return res.status(201).json(result);
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
+
+    async createLead(req,res){
+        try {
+            log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
+            const {product_id,first_name,last_name,email,phone,how_did,description,subscribe,store}=req.body;
+
+            if( !product_id ||!first_name || !last_name || !email || !phone || !phone || !how_did || !store){
+                log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
+                return res.status(400).json({
+                    message: errors.NOT_ALL_DATA.message,
+                    errCode: errors.NOT_ALL_DATA.code,
+                });
+            }
+            let product = await  productService.getProduct({_id: product_id});
+
+            let data = {
+                first_name,
+                last_name,
+                email,
+                phone,
+                how_did,
+                description,
+                subscribe,
+                product,
+                user_id:store
+            }
+
+            let result = await leadService.createLead(data);
+
+            log.info(`End createLead. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
         } catch (err) {

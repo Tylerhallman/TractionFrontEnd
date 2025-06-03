@@ -8,6 +8,7 @@ require('./models/category')
 require('./models/upload')
 require('./models/customer')
 require('./models/lightspeedProducts')
+require('./models/lead')
 
 module.exports ={
     async connectDb(){

@@ -21,6 +21,9 @@ router
     .get('/getCategories',
         storeController.getCategories
     )
+    .post('/createLead',
+        storeController.createLead
+    )
 
 
 
