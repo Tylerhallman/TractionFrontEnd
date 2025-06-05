@@ -6,6 +6,7 @@ const config = require("../configs/config");
 const typeService = require("../services/type");
 const categoryService = require("../services/category");
 const leadService = require("../services/lead");
+const contentService = require("../services/content");
 
 module.exports = {
     async getStore (req,res){
@@ -166,6 +167,28 @@ module.exports = {
             return res.status(400).json({
                 message: err.message,
                 errCode: 400
+            });
+        }
+    },
+    getContent:async(req,res)=>{
+        try {
+            const {_id} = req.params
+            const content = await contentService.getContent({ user_id: _id });
+
+            if (!content) {
+                return res.status(404).json({ message: "No content found for user" });
+            }
+
+            return res.status(200).json({
+                homepageEntryId: content.homepageEntryId,
+                typesEntryId: content.typesEntryId,
+                newsEntryId: content.newsEntryId,
+            });
+        } catch (err) {
+            log.error(err);
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400,
             });
         }
     }

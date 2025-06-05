@@ -24,6 +24,9 @@ router
     .post('/createLead',
         storeController.createLead
     )
+    .get('/content/:_id',
+        storeController.getContent
+    )
 
 
 

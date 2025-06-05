@@ -13,6 +13,7 @@ const customerRouter = require('./routes/customer')
 const settingRouter = require('./routes/setting')
 const storeRouter = require('./routes/store')
 const leadRouter = require('./routes/lead')
+const contentRouter = require('./routes/contentFull')
 
 const lightspeedCron = require('./utils/lightspeed-cron')
 
@@ -33,6 +34,7 @@ app.use('/customer',customerRouter)
 app.use('/setting', settingRouter)
 app.use('/store', storeRouter)
 app.use('/lead', leadRouter)
+app.use('/content', contentRouter)
 
 app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 
