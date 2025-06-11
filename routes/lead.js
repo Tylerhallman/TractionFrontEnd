@@ -13,5 +13,13 @@ router
         validateTokenMiddleware,
         leadController.getLead
     )
+    .post('/deleteLead',
+    validateTokenMiddleware,
+        leadController.deleteLead
+    )
+    .post('/updateLead',
+        validateTokenMiddleware,
+        leadController.updateLead
+    )
 
 module.exports = router;

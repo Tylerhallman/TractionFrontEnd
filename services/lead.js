@@ -13,4 +13,10 @@ module.exports = {
     getAllLeads:async(data)=>{
         return await Lead.find(data)
     },
+    deleteLead:async(data)=>{
+        return await Lead.deleteOne(data)
+    },
+    updateLead:async(data,condition)=>{
+        return await Lead.updateOne(condition,{$set:data})
+    }
 };
