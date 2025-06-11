@@ -31,8 +31,15 @@ module.exports = {
         try {
             log.info(`Start getAllLeads. Data: ${JSON.stringify(req.body)}`);
             const {user_id} = req.user
+            const {type} = req.query.type;
 
-            let result = await leadService.getAllLeads({user_id:user_id});
+            let find = {
+                user_id:user_id,
+            }
+            if(type){
+                find.type = type;
+            }
+            let result = await leadService.getAllLeads(find);
 
             log.info(`End getAllLeads. Data: ${JSON.stringify(result)}`);
 
