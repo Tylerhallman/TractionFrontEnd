@@ -20,6 +20,6 @@ const leadSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
-}, { collection: "Lead" });
+}, { collection: "Lead",strict: false });
 
 module.exports = mongoose.model("Lead", leadSchema);

@@ -131,39 +131,40 @@ module.exports = {
         }
     },
 
-    async createLead(req,res){
+    async createLead(req, res) {
         try {
             log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
-            const {product_id,first_name,last_name,email,phone,how_did,description,subscribe,store}=req.body;
 
-            if( !product_id ||!first_name || !last_name || !email || !phone || !phone || !how_did || !store){
+            const { product_id, store, type, ...rest } = req.body;
+
+            if (!store) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
                 return res.status(400).json({
                     message: errors.NOT_ALL_DATA.message,
                     errCode: errors.NOT_ALL_DATA.code,
                 });
             }
-            let product = await  productService.getProduct({_id: product_id});
 
             let data = {
-                first_name,
-                last_name,
-                email,
-                phone,
-                how_did,
-                description,
-                subscribe,
-                product,
-                user_id:store
+                ...rest,
+                user_id: store,
+                type,
+                created_at: new Date()
+            };
+
+            if (product_id) {
+                let product = await productService.getProduct({ _id: product_id });
+                if (product) {
+                    data.product = product;
+                }
             }
 
-            let result = await leadService.createLead(data);
-
+            const result = await leadService.createLead(data);
             log.info(`End createLead. Data: ${JSON.stringify(result)}`);
-
             return res.status(201).json(result);
+
         } catch (err) {
-            log.error(err)
+            log.error(err);
             return res.status(400).json({
                 message: err.message,
                 errCode: 400
