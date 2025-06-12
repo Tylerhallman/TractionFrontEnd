@@ -37,44 +37,47 @@ const uploadAndTransformAssets = async (environment, fields) => {
     for (const field of assetFields) {
         const value = fields[field]?.['en-US'];
 
-        if (Array.isArray(value)) {
-            const assetLinks = [];
+        if (!value) continue;
 
-            for (const url of value) {
-                const filename = url.split('/').pop();
-                const contentType = url.endsWith('.png') ? 'image/png' :
-                    url.endsWith('.jpg') || url.endsWith('.jpeg') ? 'image/jpeg' :
-                        url.endsWith('.webp') ? 'image/webp' :
-                            url.endsWith('.mp3') ? 'audio/mpeg' :
-                                'application/octet-stream';
+        const isArray = Array.isArray(value);
+        const urls = isArray ? value : [value];
 
-                const asset = await environment.createAssetFromFiles({
-                    fields: {
-                        title: { 'en-US': filename },
-                        file: {
-                            'en-US': {
-                                contentType,
-                                fileName: filename,
-                                upload: url,
-                            }
+        const assetLinks = [];
+
+        for (const url of urls) {
+            const filename = url.split('/').pop();
+            const contentType = url.endsWith('.png') ? 'image/png' :
+                url.endsWith('.jpg') || url.endsWith('.jpeg') ? 'image/jpeg' :
+                    url.endsWith('.webp') ? 'image/webp' :
+                        url.endsWith('.mp3') ? 'audio/mpeg' :
+                            'application/octet-stream';
+
+            const asset = await environment.createAssetFromFiles({
+                fields: {
+                    title: { 'en-US': filename },
+                    file: {
+                        'en-US': {
+                            contentType,
+                            fileName: filename,
+                            upload: url,
                         }
                     }
-                });
+                }
+            });
 
-                await asset.processForAllLocales();
-                await asset.publish();
+            await asset.processForAllLocales();
+            await asset.publish();
 
-                assetLinks.push({
-                    sys: {
-                        type: 'Link',
-                        linkType: 'Asset',
-                        id: asset.sys.id
-                    }
-                });
-            }
-
-            transformedFields[field] = { 'en-US': assetLinks };
+            assetLinks.push({
+                sys: {
+                    type: 'Link',
+                    linkType: 'Asset',
+                    id: asset.sys.id
+                }
+            });
         }
+
+        transformedFields[field] = { 'en-US': isArray ? assetLinks : assetLinks[0] }; // Return array or single object
     }
 
     return transformedFields;
