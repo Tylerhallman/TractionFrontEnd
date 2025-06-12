@@ -34,6 +34,15 @@ const uploadAndTransformAssets = async (environment, fields) => {
         'typesPageBannerImage',
     ];
 
+    // Функція пошуку asset за fileName
+    async function assetExists(filename) {
+        const assets = await environment.getAssets({
+            'fields.file.fileName': filename,
+            limit: 1,
+        });
+        return assets.items.length > 0 ? assets.items[0] : null;
+    }
+
     for (const field of assetFields) {
         const value = fields[field];
 
@@ -51,21 +60,26 @@ const uploadAndTransformAssets = async (environment, fields) => {
                             'application/octet-stream';
 
             try {
-                const asset = await environment.createAsset({
-                    fields: {
-                        title: { 'en-US': filename },
-                        file: {
-                            'en-US': {
-                                contentType,
-                                fileName: filename,
-                                upload: url,
+                // Перевірка чи asset з таким filename вже існує
+                let asset = await assetExists(filename);
+
+                if (!asset) {
+                    asset = await environment.createAsset({
+                        fields: {
+                            title: { 'en-US': filename },
+                            file: {
+                                'en-US': {
+                                    contentType,
+                                    fileName: filename,
+                                    upload: url,
+                                },
                             },
                         },
-                    },
-                });
+                    });
 
-                await asset.processForAllLocales();
-                await asset.publish();
+                    await asset.processForAllLocales();
+                    await asset.publish();
+                }
 
                 assetLinks.push({
                     sys: {
@@ -75,7 +89,7 @@ const uploadAndTransformAssets = async (environment, fields) => {
                     },
                 });
             } catch (error) {
-                console.error(`❌ Failed to create asset from URL (${url}):`, error.message);
+                console.error(`❌ Failed to create or find asset from URL (${url}):`, error.message);
             }
         }
 
