@@ -193,7 +193,15 @@ module.exports = {
                     },
                 });
 
-                await asset.processForAllLocales();
+                await asset.processForLocale('en-US');
+
+                let processed = false;
+                while (!processed) {
+                    asset = await environment.getAsset(asset.sys.id);
+                    processed = asset.fields.file['en-US'].url !== undefined;
+                    if (!processed) await new Promise(r => setTimeout(r, 1000));
+                }
+
                 await asset.publish();
             }
 
