@@ -27,11 +27,21 @@ const uploadAndTransformAssets = async (environment, fields) => {
     const transformedFields = { ...fields };
 
     const assetFields = [
+        'mainWebsiteImage',
+        'firstCarouselMainImage',
+        'firstBannerImage',
+        'secondBannerImage',
+        'secondCarouselMainImage',
+        'thirdBannerImage',
+        'fourthBannerMainImage',
+        'mainWebsiteAllNewsImage',
+        'mainNewsImage',
         'typeMotorcyclesAndCategoriesImage',
         'typeAtvutvAndCategoriesImages',
         'typeSnowAndCategoriesImages',
         'typeElectricAndCategoriesImages',
         'typesPageBannerImage',
+        'homepageTypeImages'
     ];
 
     // Функція пошуку asset за fileName
