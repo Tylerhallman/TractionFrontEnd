@@ -35,13 +35,11 @@ const uploadAndTransformAssets = async (environment, fields) => {
     ];
 
     for (const field of assetFields) {
-        const value = fields[field]?.['en-US'];
+        const value = fields[field];
 
         if (!value) continue;
 
-        const isArray = Array.isArray(value);
-        const urls = isArray ? value : [value];
-
+        const urls = Array.isArray(value) ? value : [value];
         const assetLinks = [];
 
         for (const url of urls) {
@@ -52,32 +50,40 @@ const uploadAndTransformAssets = async (environment, fields) => {
                         url.endsWith('.mp3') ? 'audio/mpeg' :
                             'application/octet-stream';
 
-            const asset = await environment.createAssetFromFiles({
-                fields: {
-                    title: { 'en-US': filename },
-                    file: {
-                        'en-US': {
-                            contentType,
-                            fileName: filename,
-                            upload: url,
-                        }
-                    }
-                }
-            });
+            try {
+                const asset = await environment.createAsset({
+                    fields: {
+                        title: { 'en-US': filename },
+                        file: {
+                            'en-US': {
+                                contentType,
+                                fileName: filename,
+                                upload: url,
+                            },
+                        },
+                    },
+                });
 
-            await asset.processForAllLocales();
-            await asset.publish();
+                await asset.processForAllLocales();
+                await asset.publish();
 
-            assetLinks.push({
-                sys: {
-                    type: 'Link',
-                    linkType: 'Asset',
-                    id: asset.sys.id
-                }
-            });
+                assetLinks.push({
+                    sys: {
+                        type: 'Link',
+                        linkType: 'Asset',
+                        id: asset.sys.id,
+                    },
+                });
+            } catch (error) {
+                console.error(`❌ Failed to create asset from URL (${url}):`, error.message);
+            }
         }
 
-        transformedFields[field] = { 'en-US': isArray ? assetLinks : assetLinks[0] }; // Return array or single object
+        if (assetLinks.length) {
+            transformedFields[field] = {
+                'en-US': Array.isArray(value) ? assetLinks : assetLinks[0],
+            };
+        }
     }
 
     return transformedFields;
