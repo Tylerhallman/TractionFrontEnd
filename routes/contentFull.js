@@ -11,6 +11,10 @@ router
         validateTokenMiddleware,
         contentController.updateContent
     )
+    .post('/getAsset',
+        validateTokenMiddleware,
+        contentController.getAsset
+    )
     .get('/',
         validateTokenMiddleware,
         contentController.getContent

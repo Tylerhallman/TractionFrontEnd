@@ -44,7 +44,6 @@ const uploadAndTransformAssets = async (environment, fields) => {
         'homepageTypeImages'
     ];
 
-    // Функція пошуку asset за fileName
     async function assetExists(filename) {
         const assets = await environment.getAssets({
             'fields.file.fileName': filename,
@@ -70,7 +69,6 @@ const uploadAndTransformAssets = async (environment, fields) => {
                             'application/octet-stream';
 
             try {
-                // Перевірка чи asset з таким filename вже існує
                 let asset = await assetExists(filename);
 
                 if (!asset) {
@@ -126,13 +124,13 @@ module.exports = {
                 if (type === 'tractionWebsiteNews') entryId = existingContent.newsEntryId;
             }
 
-            const finalFields = await uploadAndTransformAssets(environment, fields);
+            // const finalFields = await uploadAndTransformAssets(environment, fields);
 
             let entry;
             if (entryId) {
                 entry = await environment.getEntry(entryId);
 
-                for (const [key, value] of Object.entries(finalFields)) {
+                for (const [key, value] of Object.entries(fields)) {
                     entry.fields[key] = typeof value === 'object' && value['en-US']
                         ? value
                         : { 'en-US': value };
@@ -141,7 +139,7 @@ module.exports = {
                 entry = await entry.update();
             } else {
                 entry = await environment.createEntry(type, {
-                    fields: ensureLocalizedFields(finalFields)
+                    fields: ensureLocalizedFields(fields)
                 });
             }
 
@@ -162,7 +160,55 @@ module.exports = {
             throw err;
         }
     },
+    getAsset:async (url) =>{
+        const environment = await getEnvironment();
+        async function assetExists(filename) {
+            const assets = await environment.getAssets({
+                'fields.file.fileName': filename,
+                limit: 1,
+            });
+            return assets.items.length > 0 ? assets.items[0] : null;
+        }
+        const filename = url.split('/').pop();
+        const contentType = url.endsWith('.png') ? 'image/png' :
+            url.endsWith('.jpg') || url.endsWith('.jpeg') ? 'image/jpeg' :
+                url.endsWith('.webp') ? 'image/webp' :
+                    url.endsWith('.mp3') ? 'audio/mpeg' :
+                        'application/octet-stream';
 
+        try {
+            let asset = await assetExists(filename);
+
+            if (!asset) {
+                asset = await environment.createAsset({
+                    fields: {
+                        title: { 'en-US': filename },
+                        file: {
+                            'en-US': {
+                                contentType,
+                                fileName: filename,
+                                upload: url,
+                            },
+                        },
+                    },
+                });
+
+                await asset.processForAllLocales();
+                await asset.publish();
+            }
+
+            asset = {
+                sys: {
+                    type: 'Link',
+                    linkType: 'Asset',
+                    id: asset.sys.id,
+                },
+            };
+            return asset
+        } catch (error) {
+            console.error(`❌ Failed to create or find asset from URL (${url}):`, error.message);
+        }
+    },
     getContent: async (filter) => {
         return await Content.findOne(filter);
     }

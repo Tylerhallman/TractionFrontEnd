@@ -29,6 +29,23 @@ module.exports = {
             });
         }
     },
+    async getAsset (req,res){
+        try {
+            const { user_id } = req.user;
+            const {url} = req.body
+
+            const content = await contentService.getAsset(url);
+
+
+            return res.status(200).json(content);
+        } catch (err) {
+            log.error(err);
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400,
+            });
+        }
+    },
     async getContent(req, res) {
         try {
             const { user_id } = req.user;
