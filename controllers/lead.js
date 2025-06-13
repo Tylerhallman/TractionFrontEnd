@@ -76,10 +76,10 @@ module.exports = {
         try {
             log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
 
-            const {_id,product_id, store, type, ...rest } = req.body;
+            const {_id,product_id, type, ...rest } = req.body;
             const {user_id} = req.user
 
-            if (!store) {
+            if (!_id) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
                 return res.status(400).json({
                     message: errors.NOT_ALL_DATA.message,
