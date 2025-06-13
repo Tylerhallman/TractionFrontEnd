@@ -32,7 +32,7 @@ module.exports = {
         try {
             log.info(`Start getAllLeads. Data: ${JSON.stringify(req.body)}`);
             const {user_id} = req.user
-            const {type} = req.query.type;
+            const {type} = req.query;
 
             let find = {
                 user_id:user_id,
