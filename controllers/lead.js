@@ -57,7 +57,7 @@ module.exports = {
         try {
             log.info(`Start deleteLead. Data: ${JSON.stringify(req.body)}`);
             const {user_id} = req.user
-            const {_id} = req.body.type;
+            const {_id} = req.body;
 
             let result = await leadService.deleteLead({_id: _id,user_id:user_id});
 
