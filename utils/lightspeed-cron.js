@@ -12,7 +12,7 @@ module.exports = {
      synchronizeProducts :async ()=>  {
          log.info("Start synchronizeProducts");
 
-         // cron.schedule("0 3 * * *", async () => {
+         cron.schedule("0 3 * * *", async () => {
              log.info("🔄 Start synchronizing products...");
 
              try {
@@ -95,7 +95,7 @@ module.exports = {
              } catch (error) {
                  log.error(`Error processing products: ${error.message}`);
              }
-         // });
+         });
     },
 
     mathLightspeedProduct:async (user_id,make,model) => {
