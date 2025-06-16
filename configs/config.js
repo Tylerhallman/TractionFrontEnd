@@ -23,6 +23,8 @@ module.exports ={
 
     BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
 
+    CRON_TOKEN: process.env.CRON_TOKEN,
+
     ROLES:{
         STORE:1
     },

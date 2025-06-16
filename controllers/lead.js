@@ -16,6 +16,8 @@ module.exports = {
                 });
             }
 
+            await leadService.updateLead({viewed:true},{_id:_id})
+
             let result = await leadService.getLead({_id: _id});
             log.info(`End getLead. Data: ${JSON.stringify(result)}`);
 
@@ -32,13 +34,16 @@ module.exports = {
         try {
             log.info(`Start getAllLeads. Data: ${JSON.stringify(req.body)}`);
             const {user_id} = req.user
-            const {type} = req.query;
+            const {type,email} = req.query;
 
             let find = {
                 user_id:user_id,
             }
             if(type){
                 find.type = type;
+            }
+            if(email){
+                find.email = email;
             }
             let result = await leadService.getAllLeads(find);
 

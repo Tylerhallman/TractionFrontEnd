@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
-
+const config = require('./configs/config');
 const { connectDb }=require('./orm')
 
 const authRouter = require('./routes/auth')
@@ -36,6 +35,23 @@ app.use('/store', storeRouter)
 app.use('/lead', leadRouter)
 app.use('/content', contentRouter)
 
+
+app.post('/api/run-lightspeed-cron/:token', async (req, res) => {
+    try {
+        const {token} = req.params
+        if(token === config.CRON_TOKEN){
+            await init()
+            lightspeedCron.synchronizeProducts();
+            res.json({ status: 'done' });
+        }else{
+            res.json({ status: 'false' });
+        }
+
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 app.get('/', (req, res) => res.json({ status: "ok - homePage" }));
 
 app.use((err, req, res, next) => {
@@ -46,6 +62,7 @@ app.use((err, req, res, next) => {
             errorCode: err.errorCode ? err.errorCode : 0
         });
 });
+
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
@@ -64,9 +81,8 @@ async function assertDatabaseConnectionOk() {
 
 async function init() {
     await assertDatabaseConnectionOk();
-    await lightspeedCron.synchronizeProducts();
-}
 
+}
 
 init();
 
