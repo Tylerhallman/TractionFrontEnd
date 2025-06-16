@@ -41,7 +41,7 @@ app.post('/api/run-lightspeed-cron/:token', async (req, res) => {
         const {token} = req.params
         if(token === config.CRON_TOKEN){
             await init()
-            lightspeedCron.synchronizeProducts();
+            await lightspeedCron.synchronizeProducts();
             res.json({ status: 'done' });
         }else{
             res.json({ status: 'false' });
