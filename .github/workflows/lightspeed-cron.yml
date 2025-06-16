@@ -1,0 +1,17 @@
+name: Run Lightspeed Cron Daily
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Lightspeed Cron API call
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: 'https://traction-backend.vercel.app/api/run-lightspeed-cron/d9f3a1b7c5e42f8d0a9e6b3c7d1f2a4e'
+          method: 'POST'
