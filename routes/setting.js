@@ -19,6 +19,10 @@ router
         validateTokenMiddleware,
         settingController.deactivateProfile
     )
+    .post('/changePassword',
+        validateTokenMiddleware,
+        settingController.changePassword
+    )
 
 
 

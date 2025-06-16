@@ -84,5 +84,9 @@ module.exports = {
     EXIST_STORE_WITH_EMAIL:{
         message:'This mail address is already in use',
         code:400
-    }
+    },
+    BAD_REQUEST_PASSWORD_NOT_MUCH_CONFIRM_PASSWORD:{
+        message:"The confirmation password must match the new password",
+        code:400
+    },
 }

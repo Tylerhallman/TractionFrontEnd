@@ -4,6 +4,10 @@ const userService = require('../services/user')
 const bcryptUtil = require("../utils/bcrypt-util");
 const config = require("../configs/config");
 
+const {passwordValidation} = require("../helper/validation");
+const {hashPassword} = require("../utils/bcrypt-util");
+
+
 module.exports = {
     async updateProfile (req,res){
         try {
@@ -88,6 +92,53 @@ module.exports = {
             }
             await userService.updateUser({_id:user_id},{status:config.USER_STATUS.DEACTIVATE})
             log.info(`End getProfile. Data: ${JSON.stringify({deactivate:true})}`);
+
+            return res.status(201).json({deactivate:true});
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
+    changePassword:async(req,res)=>{
+        try {
+            log.info(`Start changePassword. Data: ${JSON.stringify(req.body)}`);
+            const {user_id} = req.user
+            const {new_password,confirm_password} = req.body
+            if(!new_password || !confirm_password){
+                log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
+                return res.status(400).json({
+                    message: errors.NOT_ALL_DATA.message,
+                    errCode: errors.NOT_ALL_DATA.code,
+                });
+            }
+            const user = await userService.getUserDetail({_id:user_id},'_id role password');
+
+            if (!user) {
+                log.error(`${JSON.stringify(errors.USER_NOT_FOUND)}`);
+                return res.status(400).json({
+                    message: errors.USER_NOT_FOUND.message,
+                    errCode: errors.USER_NOT_FOUND.code,
+                });
+            }
+            if (! await passwordValidation(new_password)) {
+                log.error(`${JSON.stringify(errors.BAD_REQUEST_NOT_VALID_PASSWORD)}`);
+                return res.status(errors.BAD_REQUEST_NOT_VALID_PASSWORD.code).json({
+                    message: errors.BAD_REQUEST_NOT_VALID_PASSWORD.message,
+                    errCode: errors.BAD_REQUEST_NOT_VALID_PASSWORD.code,
+                })
+            }
+            if(new_password !== confirm_password){
+                log.error(`${JSON.stringify(errors.BAD_REQUEST_PASSWORD_NOT_MUCH_CONFIRM_PASSWORD)}`);
+                return res.status(400).json({
+                    message: errors.BAD_REQUEST_PASSWORD_NOT_MUCH_CONFIRM_PASSWORD.message,
+                    errCode: errors.BAD_REQUEST_PASSWORD_NOT_MUCH_CONFIRM_PASSWORD.code,
+                });
+            }
+            await userService.updateUser({_id:user_id},{password: await hashPassword(new_password)})
+            log.info(`End changePassword. Data: ${JSON.stringify({deactivate:true})}`);
 
             return res.status(201).json({deactivate:true});
         } catch (err) {

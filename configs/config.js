@@ -36,5 +36,10 @@ module.exports ={
         ACTIVE:1,
         DRAFT:2,
         ARCHIVED:3
-    }
+    },
+
+
+    REGEX_PHONE : /^[\d\s\-()+]{6,20}$/,
+    REGEX_EMAIL: /^[a-zA-Z0-9.!#$%&’*+\/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
+    REGEX_PASSWORD: /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/,
 }
