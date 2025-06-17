@@ -69,6 +69,7 @@ module.exports = {
                                          is_math: true,
                                          stock_number: matchedProduct.stockNumber,
                                          vin: matchedProduct.vin,
+                                         status: config.PRODUCT_STATUSES.ACTIVE,
                                          lightspeed_status: "in stock"
                                      });
                                  } else {
@@ -76,6 +77,7 @@ module.exports = {
                                          is_math: false,
                                          vin: null,
                                          stock_number: null,
+                                         status: config.PRODUCT_STATUSES.DRAFT,
                                          lightspeed_status: "out of stock"
                                      });
                                  }
