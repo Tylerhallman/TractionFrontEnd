@@ -7,6 +7,7 @@ const typeService = require("../services/type");
 const categoryService = require("../services/category");
 const leadService = require("../services/lead");
 const contentService = require("../services/content");
+const customerService = require("../services/customer");
 
 module.exports = {
     async getStore (req,res){
@@ -135,7 +136,7 @@ module.exports = {
         try {
             log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
 
-            const { product_id, store, type, ...rest } = req.body;
+            const { product_id, store, type,email,phone,first_name,last_name,firstName,lastName,full_name, ...rest } = req.body;
 
             if (!store) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
@@ -148,7 +149,14 @@ module.exports = {
             let data = {
                 ...rest,
                 user_id: store,
+                first_name:first_name ? first_name :null,
+                last_name:last_name ? last_name : null,
+                firstName:firstName ? firstName :null,
+                lastName:lastName ? lastName : null,
+                full_name:full_name ? full_name :null,
                 type,
+                email,
+                phone,
                 created_at: new Date()
             };
 
@@ -160,6 +168,23 @@ module.exports = {
             }
 
             const result = await leadService.createLead(data);
+
+            let customerExist = await customerService.getCustomer({email:email})
+            if(!customerExist){
+                let splitName = full_name.split(' ');
+                let data_first_name = first_name ? first_name : (firstName ? firstName : (splitName && splitName.length ? splitName[0] : null));
+                let data_last_name = last_name ? last_name : (lastName ? lastName : (splitName && splitName.length ? splitName[1] : null));
+
+                await customerService.createCustomer(
+                    {
+                        first_name:data_first_name ? data_first_name : null,
+                        last_name: data_last_name ? data_last_name : null,
+                        email:email,
+                        phone:phone,
+                        user_id:store,
+                    }
+                )
+            }
             log.info(`End createLead. Data: ${JSON.stringify(result)}`);
             return res.status(201).json(result);
 
