@@ -16,7 +16,7 @@ const leadSchema = new mongoose.Schema({
     product:{
         type: Object
     },
-    viewed:{ type: Boolean, required: false },
+    viewed:{ type: Boolean, default: false },
     created_at:{
         type: Date,
         default: Date.now
