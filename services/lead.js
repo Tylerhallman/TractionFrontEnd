@@ -18,5 +18,9 @@ module.exports = {
     },
     updateLead:async(data,condition)=>{
         return await Lead.updateOne(condition,{$set:data})
+    },
+    getCount:async(condition)=>{
+        return await Lead.countDocuments(condition)
     }
+
 };

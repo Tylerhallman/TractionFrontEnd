@@ -21,5 +21,9 @@ router
         validateTokenMiddleware,
         leadController.updateLead
     )
+    .get('/getLeadsCountViewed',
+        validateTokenMiddleware,
+        leadController.getLeadsCountViewed
+    )
 
 module.exports = router;

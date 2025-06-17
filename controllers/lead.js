@@ -117,5 +117,40 @@ module.exports = {
                 errCode: 400
             });
         }
+    },
+    getLeadsCountViewed:async(req,res)=>{
+        try {
+            log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
+
+            const {user_id} = req.user
+
+            const [quotes,finance_app,contacts,careers,trade_in,service,parts] =  [
+                await leadService.getCount({user_id:user_id, type:'quotes', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'finance app', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'contacts', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'careers', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'trade-in', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'service', viewed:false}),
+                await leadService.getCount({user_id:user_id, type:'parts', viewed:false}),
+            ]
+            const result = {
+                quotes,
+                finance_app,
+                contacts,
+                careers,
+                trade_in,
+                service,
+                parts
+            }
+            log.info(`End createLead. Data: ${JSON.stringify(result)}`);
+            return res.status(201).json(result);
+
+        } catch (err) {
+            log.error(err);
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
     }
 };
