@@ -27,6 +27,9 @@ router
     .get('/content/:_id',
         storeController.getContent
     )
+    .get('/vendors',
+        storeController.getStoreVendors
+    )
 
 
 

@@ -217,6 +217,37 @@ module.exports = {
                 errCode: 400,
             });
         }
+    },
+    getStoreVendors: async (req, res) => {
+        try {
+            log.info(`Start getStoreVendors. Data: ${JSON.stringify(req.query)}`);
+
+            const { store } = req.query;
+            if (!store) {
+                return res.status(404).json({ message: "No selected store" });
+            }
+
+            const products = await productService.getProducts({
+                user_id: store,
+                status: config.PRODUCT_STATUSES.ACTIVE
+            });
+
+            const vendors = products
+                .map(p => p.product_organization.vendor)
+                .filter(v => !!v);
+
+            const uniqueVendors = [...new Set(vendors)];
+
+            log.info(`End getStoreVendors. Vendors: ${JSON.stringify(uniqueVendors)}`);
+
+            return res.status(200).json(uniqueVendors);
+        } catch (err) {
+            log.error(err);
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400,
+            });
+        }
     }
 
 };
