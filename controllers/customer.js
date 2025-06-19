@@ -1,6 +1,7 @@
 const log = require("../utils/logger");
 const errors = require("../configs/errors");
 const customerService = require('../services/customer')
+const leadService = require('../services/lead');
 
 module.exports = {
     createCustomer: async (req, res) => {
@@ -95,10 +96,11 @@ module.exports = {
             });
         }
     },
-    async getCustomer (req,res) {
+    async getCustomer(req, res) {
         try {
             log.info(`Start getCustomer. Data: ${JSON.stringify(req.body)}`);
-            const {_id} = req.params
+            const { _id } = req.params;
+
             if (!_id) {
                 log.error(`${JSON.stringify(errors.NO_FIND_DATA)}`);
                 return res.status(400).json({
@@ -107,12 +109,28 @@ module.exports = {
                 });
             }
 
-            let result = await customerService.getCustomer({_id: _id});
-            log.info(`End getCustomer. Data: ${JSON.stringify(result)}`);
+            const result = await customerService.getCustomer({ _id });
 
-            return res.status(201).json(result);
+            let leads = await leadService.getAllLeads({ email: result.email });
+
+            leads.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const groupedLeads = leads.reduce((acc, lead) => {
+                const type = lead.type || 'unknown';
+                if (!acc[type]) {
+                    acc[type] = [];
+                }
+                acc[type].push(lead);
+                return acc;
+            }, {});
+
+            let finalResult = {...result.toJSON(),leads_by_type:groupedLeads}
+
+            log.info(`End getCustomer. Data: ${JSON.stringify(finalResult)}`);
+            return res.status(201).json(finalResult);
+
         } catch (err) {
-            log.error(err)
+            log.error(err);
             return res.status(400).json({
                 message: err.message,
                 errCode: 400
