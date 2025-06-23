@@ -60,6 +60,7 @@ const productSchema = new mongoose.Schema({
     },
     lightspeed_status:{
       type: String,
+        default:'out of stock'
     },
     year:{
         type:String,
