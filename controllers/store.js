@@ -42,7 +42,7 @@ module.exports = {
         try {
             log.info(`Start getStoreProducts. Data: ${JSON.stringify(req.body)}`);
             const {_id} = req.query
-
+            const {search} = req.query;
             let store = await userService.getUserDetail({_id:_id,status:config.USER_STATUS.ACTIVE});
             if(!store){
                 log.error(`${JSON.stringify(errors.NO_FIND_STORE)}`);
@@ -51,7 +51,13 @@ module.exports = {
                     errCode: errors.NO_FIND_STORE.code,
                 });
             }
-            let products = await productService.getProducts({user_id:_id,status:config.PRODUCT_STATUSES.ACTIVE})
+            let query = {user_id:_id,status:config.PRODUCT_STATUSES.ACTIVE};
+
+            if (search) {
+                query.title = { $regex: search, $options: 'i' };
+            }
+
+            let products = await productService.getProducts(query)
 
 
 
