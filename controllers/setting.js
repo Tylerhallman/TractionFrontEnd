@@ -7,6 +7,8 @@ const config = require("../configs/config");
 const {passwordValidation} = require("../helper/validation");
 const {hashPassword} = require("../utils/bcrypt-util");
 
+const mailUtil = require('../utils/mail-util')
+
 
 module.exports = {
     async updateProfile (req,res){
@@ -141,6 +143,41 @@ module.exports = {
             log.info(`End changePassword. Data: ${JSON.stringify({deactivate:true})}`);
 
             return res.status(201).json({deactivate:true});
+        } catch (err) {
+            log.error(err)
+            return res.status(400).json({
+                message: err.message,
+                errCode: 400
+            });
+        }
+    },
+    sendMailToChangePassword:async(req,res)=>{
+        try {
+            log.info(`Start changePassword. Data: ${JSON.stringify(req.body)}`);
+            const {user_id} = req.user
+
+            const user = await userService.getUserDetail({_id:user_id},'_id email full_name');
+
+            if (!user) {
+                log.error(`${JSON.stringify(errors.USER_NOT_FOUND)}`);
+                return res.status(400).json({
+                    message: errors.USER_NOT_FOUND.message,
+                    errCode: errors.USER_NOT_FOUND.code,
+                });
+            }
+            let mailObj = {
+                from:config.MAIL_DEFAULT_REPLY,
+                to: user.email,
+                subject: "Change password",
+                data: {
+                    full_name:user.full_name,
+                    url:`${config.FRONT_URL}reset-password`
+                }
+            };
+            await mailUtil.sendMail(mailObj,'change_password')
+            log.info(`End changePassword. Data: ${JSON.stringify({send:true})}`);
+
+            return res.status(201).json({send:true});
         } catch (err) {
             log.error(err)
             return res.status(400).json({

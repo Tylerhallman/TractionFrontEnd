@@ -23,6 +23,10 @@ router
         validateTokenMiddleware,
         settingController.changePassword
     )
+    .post('/sendMailToChangePassword',
+        validateTokenMiddleware,
+        settingController.sendMailToChangePassword
+    )
 
 
 
