@@ -110,8 +110,31 @@ module.exports = {
             }
 
             const result = await customerService.getCustomer({ _id });
-
             let leads = await leadService.getAllLeads({ email: result.email });
+
+            leads = leads.map((lead) => {
+                if (lead.type === 'finance app') {
+                    const decryptedLead = { ...lead._doc };
+
+                    for (const [key, value] of Object.entries(decryptedLead)) {
+                        if (
+                            ['_id', 'user_id', 'type', 'email', 'phone', 'first_name', 'last_name', 'firstName', 'lastName', 'full_name', 'created_at', 'updated_at', '__v', 'viewed'].includes(key)
+                        ) continue;
+
+                        try {
+                            const parsed = JSON.parse(value);
+                            if (parsed.iv && parsed.content) {
+                                decryptedLead[key] = decrypt(parsed);
+                            }
+                        } catch (e) {
+                            decryptedLead[key] = value;
+                        }
+                    }
+
+                    return decryptedLead;
+                }
+                return lead;
+            });
 
             leads.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
@@ -124,7 +147,10 @@ module.exports = {
                 return acc;
             }, {});
 
-            let finalResult = {...result.toJSON(),leads_by_type:groupedLeads}
+            const finalResult = {
+                ...result.toJSON(),
+                leads_by_type: groupedLeads
+            };
 
             log.info(`End getCustomer. Data: ${JSON.stringify(finalResult)}`);
             return res.status(201).json(finalResult);

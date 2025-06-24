@@ -25,6 +25,8 @@ module.exports ={
 
     CRON_TOKEN: process.env.CRON_TOKEN,
 
+    CRYPTO_SECRET: process.env.CRYPTO_SECRET,
+
     ROLES:{
         STORE:1
     },

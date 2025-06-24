@@ -8,6 +8,7 @@ const categoryService = require("../services/category");
 const leadService = require("../services/lead");
 const contentService = require("../services/content");
 const customerService = require("../services/customer");
+const { encrypt } = require('../utils/crypto');
 
 module.exports = {
     async getStore (req,res){
@@ -152,14 +153,29 @@ module.exports = {
                 });
             }
 
+            let encryptedRest = {};
+
+            if (type === 'finance app') {
+                for (const [key, value] of Object.entries(rest)) {
+                    if (typeof value === 'string' || typeof value === 'number') {
+                        const enc = encrypt(String(value));
+                        encryptedRest[key] = JSON.stringify(enc);
+                    } else {
+                        encryptedRest[key] = value;
+                    }
+                }
+            } else {
+                encryptedRest = rest;
+            }
+
             let data = {
-                ...rest,
+                ...encryptedRest,
                 user_id: store,
-                first_name:first_name ? first_name :null,
-                last_name:last_name ? last_name : null,
-                firstName:firstName ? firstName :null,
-                lastName:lastName ? lastName : null,
-                full_name:full_name ? full_name :null,
+                first_name: first_name || null,
+                last_name: last_name || null,
+                firstName: firstName || null,
+                lastName: lastName || null,
+                full_name: full_name || null,
                 type,
                 email,
                 phone,

@@ -2,12 +2,14 @@ const log = require("../utils/logger");
 const errors = require("../configs/errors");
 const leadService = require('../services/lead')
 const productService = require("../services/product");
+const { decrypt,encrypt } = require("../utils/crypto");
 
 module.exports = {
-    async getLead (req,res) {
+    async getLead(req, res) {
         try {
             log.info(`Start getLead. Data: ${JSON.stringify(req.body)}`);
-            const {_id} = req.params
+            const { _id } = req.params;
+
             if (!_id) {
                 log.error(`${JSON.stringify(errors.NO_FIND_DATA)}`);
                 return res.status(400).json({
@@ -16,14 +18,36 @@ module.exports = {
                 });
             }
 
-            await leadService.updateLead({viewed:true},{_id:_id})
+            await leadService.updateLead({ viewed: true }, { _id });
 
-            let result = await leadService.getLead({_id: _id});
+            let result = await leadService.getLead({ _id });
+
+            if (result?.type === 'finance app') {
+                const decryptedLead = { ...result._doc }; //
+
+                for (const [key, value] of Object.entries(decryptedLead)) {
+                    if (
+                        ['_id', 'user_id', 'type', 'email', 'phone', 'first_name', 'last_name', 'firstName', 'lastName', 'full_name', 'created_at', 'updated_at', '__v', 'viewed'].includes(key)
+                    ) continue;
+
+                    try {
+                        const parsed = JSON.parse(value);
+                        if (parsed.iv && parsed.content) {
+                            decryptedLead[key] = decrypt(parsed);
+                        }
+                    } catch (e) {
+                        decryptedLead[key] = value;
+                    }
+                }
+
+                result = decryptedLead;
+            }
+
             log.info(`End getLead. Data: ${JSON.stringify(result)}`);
 
             return res.status(201).json(result);
         } catch (err) {
-            log.error(err)
+            log.error(err);
             return res.status(400).json({
                 message: err.message,
                 errCode: 400
@@ -46,6 +70,30 @@ module.exports = {
                 find.email = email;
             }
             let result = await leadService.getAllLeads(find);
+
+            result = result.map((lead) => {
+                if (lead.type === 'finance app') {
+                    const decryptedLead = { ...lead._doc };
+
+                    for (const [key, value] of Object.entries(decryptedLead)) {
+                        if (
+                            ['_id', 'user_id', 'type', 'email', 'phone', 'first_name', 'last_name', 'firstName', 'lastName', 'full_name', 'created_at', 'updated_at', '__v', 'viewed'].includes(key)
+                        ) continue;
+
+                        try {
+                            const parsed = JSON.parse(value);
+                            if (parsed.iv && parsed.content) {
+                                decryptedLead[key] = decrypt(parsed);
+                            }
+                        } catch (e) {
+                            decryptedLead[key] = value;
+                        }
+                    }
+
+                    return decryptedLead;
+                }
+                return lead;
+            });
 
             log.info(`End getAllLeads. Data: ${JSON.stringify(result)}`);
 
@@ -77,12 +125,12 @@ module.exports = {
             });
         }
     },
-    async updateLead (req,res){
+    async updateLead(req, res) {
         try {
-            log.info(`Start createLead. Data: ${JSON.stringify(req.body)}`);
+            log.info(`Start updateLead. Data: ${JSON.stringify(req.body)}`);
 
-            const {_id,product_id, type, ...rest } = req.body;
-            const {user_id} = req.user
+            const { _id, product_id, type, ...rest } = req.body;
+            const { user_id } = req.user;
 
             if (!_id) {
                 log.error(`${JSON.stringify(errors.NOT_ALL_DATA)}`);
@@ -92,8 +140,29 @@ module.exports = {
                 });
             }
 
+            let encryptedRest = {};
+
+            if (type === 'finance app') {
+                for (const [key, value] of Object.entries(rest)) {
+                    if (
+                        ['_id', 'user_id', 'type', 'email', 'phone', 'first_name', 'last_name', 'firstName', 'lastName', 'full_name', 'created_at', 'updated_at', '__v', 'viewed'].includes(key)
+                    ) {
+                        encryptedRest[key] = value;
+                    } else {
+                        if (typeof value === 'string' || typeof value === 'number') {
+                            const enc = encrypt(String(value));
+                            encryptedRest[key] = JSON.stringify(enc);
+                        } else {
+                            encryptedRest[key] = value;
+                        }
+                    }
+                }
+            } else {
+                encryptedRest = rest;
+            }
+
             let data = {
-                ...rest,
+                ...encryptedRest,
                 user_id: user_id,
                 type,
                 created_at: new Date()
@@ -106,8 +175,8 @@ module.exports = {
                 }
             }
 
-            const result = await leadService.updateLead(data,{_id:_id});
-            log.info(`End createLead. Data: ${JSON.stringify(result)}`);
+            const result = await leadService.updateLead(data, { _id });
+            log.info(`End updateLead. Data: ${JSON.stringify(result)}`);
             return res.status(201).json(result);
 
         } catch (err) {
