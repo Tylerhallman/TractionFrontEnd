@@ -59,7 +59,8 @@ try {
 
 const getTemplate = async(data, type) => {
     log.info(`Start generating mail template. Data: ${JSON.stringify(data)} Type: ${JSON.stringify(type)}`);
-    let file = await fs.readFileSync(`views/email-template/${type}.hbs`);
+    const filePath = path.join(process.cwd(), 'views', 'email-template', `${type}.hbs`);
+    const file = fs.readFileSync(filePath, 'utf8');
     let source = file.toString();
     let template = handlebars.compile(source);
     let result = await template({...data, frontUrl: config.FRONT_URL, imgUrl: config.IMG_URL });
