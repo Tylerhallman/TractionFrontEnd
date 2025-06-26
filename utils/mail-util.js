@@ -3,6 +3,7 @@ const config = require('../configs/config');
 const log = require('./logger');
 const handlebars = require('handlebars');
 const fs = require("fs");
+const path = require('path');
 /**
  * Create mail client
  * @param
