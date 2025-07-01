@@ -31,6 +31,7 @@ module.exports = {
                 model,
                 year,
                 vin,
+                condition,
                 callouts,
                 banner_content,
                 feature,
@@ -70,6 +71,7 @@ module.exports = {
                 model,
                 year,
                 vin,
+                condition,
                 callouts,
                 banner_content,
                 feature,
@@ -93,7 +95,6 @@ module.exports = {
 
 
             let match = await lightSpeed.mathLightspeedProduct(user_id,make,model)
-            console.log(match,'2623626262623')
             if(match){
                 data.is_math = match.is_math;
                 data.stock_number = match.stock_number;
@@ -140,6 +141,7 @@ module.exports = {
                 is_math,
                 year,
                 vin,
+                condition,
                 stock_number,
                 callouts,
                 banner_content,
@@ -182,6 +184,7 @@ module.exports = {
                 year,
                 stock_number,
                 vin,
+                condition,
                 is_math,
                 callouts,
                 banner_content,

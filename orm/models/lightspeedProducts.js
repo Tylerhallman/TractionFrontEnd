@@ -73,6 +73,9 @@ const lightspeedProductSchema = new mongoose.Schema({
     vin:{
         type: String,
     },
+    condition:{
+      type: String,
+    },
     callouts:{
         type:String,
     },
