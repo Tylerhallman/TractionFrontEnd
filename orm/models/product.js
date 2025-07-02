@@ -98,10 +98,10 @@ const productSchema = new mongoose.Schema({
     gallery_1:{
         type: Object,
     },
-    attributes: [{
-        key: String,
-        value: String
-    }],
+    attributes: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
     gallery_2:{
         type: Object,
     },

@@ -91,10 +91,10 @@ const lightspeedProductSchema = new mongoose.Schema({
     warranty_content:{
         type: String
     },
-    attributes: [{
-        key: String,
-        value: String
-    }],
+    attributes: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
     warranty_link:{
         type: String,
     },
