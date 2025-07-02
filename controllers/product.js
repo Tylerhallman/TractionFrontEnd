@@ -40,7 +40,8 @@ module.exports = {
                 warranty_link,
                 gallery_1,
                 gallery_2,
-                gallery_3
+                gallery_3,
+                attributes
             } = req.body;
             const {user_id} = req.user
 
@@ -81,6 +82,7 @@ module.exports = {
                 gallery_1,
                 gallery_2,
                 gallery_3,
+                attributes,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
@@ -152,6 +154,7 @@ module.exports = {
                 gallery_1,
                 gallery_2,
                 gallery_3,
+                attributes,
             } = req.body;
             const {user_id} = req.user
 
@@ -195,6 +198,7 @@ module.exports = {
                 gallery_1,
                 gallery_2,
                 gallery_3,
+                attributes,
                 status: status? status:config.PRODUCT_STATUSES.DRAFT,
                 published,
                 product_organization: {
