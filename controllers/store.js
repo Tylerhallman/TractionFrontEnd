@@ -196,7 +196,7 @@ module.exports = {
 
             let customerExist = await customerService.getCustomer({email:email})
             if(!customerExist){
-                let splitName = full_name.split(' ');
+                let splitName = full_name?.split(' ');
                 let data_first_name = first_name ? first_name : (firstName ? firstName : (splitName && splitName.length ? splitName[0] : null));
                 let data_last_name = last_name ? last_name : (lastName ? lastName : (splitName && splitName.length ? splitName[1] : null));
 
