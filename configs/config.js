@@ -50,6 +50,9 @@ module.exports ={
         DRAFT:2,
         ARCHIVED:3
     },
+    LIGHTSPEED_CREATE_URL:process.env.LIGHTSPEED_CREATE_URL,
+    LIGHTSPEED_SOURCE_ID:process.env.LIGHTSPEED_SOURCE_ID,
+    LIGHTSPEED_CREATE_API_KEY:process.env.LIGHTSPEED_CREATE_API_KEY,
 
 
     REGEX_PHONE : /^[\d\s\-()+]{6,20}$/,

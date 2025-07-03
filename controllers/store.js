@@ -8,6 +8,7 @@ const categoryService = require("../services/category");
 const leadService = require("../services/lead");
 const contentService = require("../services/content");
 const customerService = require("../services/customer");
+const lightspeedUtils = require("../utils/lightspeed-cron");
 const { encrypt } = require('../utils/crypto');
 
 module.exports = {
@@ -190,6 +191,8 @@ module.exports = {
             }
 
             const result = await leadService.createLead(data);
+            const user = await userService.getUserDetail({_id:store});
+            await lightspeedUtils.sendLeadToLightspeed(result,user.cmf_id)
 
             let customerExist = await customerService.getCustomer({email:email})
             if(!customerExist){

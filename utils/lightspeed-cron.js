@@ -6,7 +6,8 @@ const userService = require('../services/user')
 const productService = require('../services/product')
 const productLightspeedService = require('../services/lightspeedProduct')
 const categoryService = require('../services/category')
-
+const { create } = require('xmlbuilder2');
+const {decrypt} = require("./crypto");
 
 module.exports = {
      synchronizeProducts :async ()=>  {
@@ -134,9 +135,137 @@ module.exports = {
             console.log(error.message);
 
         }
+    },
+    sendLeadToLightspeed:async(lead,dealershipId) =>{
+
+        try {
+            if (lead?.type === 'finance app') {
+                const decryptedLead = { ...lead._doc };
+
+                for (const [key, value] of Object.entries(decryptedLead)) {
+                    if (
+                        ['_id', 'user_id', 'type', 'email', 'phone', 'first_name', 'last_name', 'firstName', 'lastName', 'full_name', 'created_at', 'updated_at', '__v', 'viewed'].includes(key)
+                    ) continue;
+
+                    try {
+                        const parsed = JSON.parse(value);
+                        if (parsed.iv && parsed.content) {
+                            decryptedLead[key] = decrypt(parsed);
+                        }
+                    } catch (e) {
+                        decryptedLead[key] = value;
+                    }
+                }
+
+                lead = decryptedLead;
+            }
+
+            const endpoint = config.LIGHTSPEED_CREATE_URL;
+            const xml = await mapLeadToLightspeedXML(lead, dealershipId);
+            console.log(xml)
+            const response = await axios.post(
+                `${endpoint}?method=AddProspect&sourceid=${config.LIGHTSPEED_SOURCE_ID}`,
+                new URLSearchParams({ ProspectXML: xml }),
+                {
+                    headers: {
+                        'X-PCHAPIKey': config.LIGHTSPEED_CREATE_API_KEY,
+                        'SOAPAction':"https://tempuri.org/AddProspect",
+                        'Content-Type': 'text/xml',
+                    },
+                }
+            );
+            console.log('✅ Lead sent successfully:\n', response.data);
+            return true
+        } catch (error) {
+            console.log(error)
+            console.error('❌ Error sending lead:', error.response?.data || error.message);
+        }
     }
 };
 
+const mapLeadToLightspeedXML = async (lead, dealershipId) => {
+    try {
+        const sourceProspectId = `${dealershipId}_${lead._id}`;
+        const name = `${lead.firstName || ''} ${lead.lastName || ''}`.trim() || lead.full_name || 'Unknown';
+
+        const notesParts = [];
+
+        const noteFields = [
+            'maritalStatus', 'housingStatus', 'landlord', 'rentAmount',
+            'timeAtResidenceYears', 'bankName1', 'accountType1', 'employerName',
+            'salary', 'employmentYears', 'employmentType', 'otherIncome',
+            'incomeFrequency', 'comments'
+        ];
+        noteFields.forEach((field) => {
+            if (lead[field]) {
+                notesParts.push(`${field}: ${lead[field]}`);
+            }
+        });
+
+        if (lead.description) {
+            notesParts.push(`Description: ${lead.description}`);
+        }
+
+        const references = [];
+        for (let i = 1; i <= 4; i++) {
+            const ref = lead[`reference${i}`];
+            if (ref) {
+                references.push(`Reference ${i}: ${ref.name || ''}, ${ref.phone || ''}, ${ref.city || ''}, ${ref.state || ''}`);
+            }
+        }
+
+        if (references.length) {
+            notesParts.push(...references);
+        }
+
+        const notes = notesParts.join('\n');
+
+        const xmlBuilder = create({ version: '1.0', encoding: 'UTF-8' })
+            .ele('ProspectImport')
+            .ele('Item');
+
+        xmlBuilder.ele('SourceProspectId').txt(sourceProspectId).up();
+        xmlBuilder.ele('DealershipId').txt(dealershipId).up();
+        xmlBuilder.ele('Name').txt(name).up();
+
+        const fieldMap = {
+            Email: lead.email,
+            Phone: lead.residencePhone || lead.phone,
+            AltPhone: lead.workPhone,
+            Gender: lead.gender,
+            Birthdate: lead.dateOfBirth,
+            DLNumber: lead.license,
+            SSN: lead.ssn,
+            Address1: lead.physicalAddress,
+            City: lead.city,
+            State: lead.state,
+            ZipCode: lead.zip,
+            Country: lead.country,
+            VehicleNewUsed: lead.product?.vehicleCondition || lead?.vehicleCondition,
+            VehicleMake: lead.product?.make || lead?.vehicleMake,
+            VehicleModel: lead.product?.model || lead?.vehicleModel,
+            VehicleYear: lead.product?.year || lead?.vehicleYear,
+            VehicleType: lead.product?.vehicleType || lead?.vehicleType,
+            VehiclePrice: lead.product?.pricing?.price || lead?.downPayment,
+            PurchaseTimeframe: lead.purchaseTimeframe || 'Soon',
+        };
+
+        for (const [key, value] of Object.entries(fieldMap)) {
+            if (value !== undefined && value !== null && value !== '') {
+                xmlBuilder.ele(key).txt(String(value)).up();
+            }
+        }
+
+        if (notes) {
+            xmlBuilder.ele('Notes').dat(notes).up();
+        }
+
+        const xml = xmlBuilder.up().up().end({ prettyPrint: true });
+        return xml;
+    } catch (err) {
+        throw err;
+    }
+};
 const transformProductData = async (data, userId) => {
     const profit = data.WebPrice - data.totalCost;
     const margin = data.WebPrice ? (profit / data.WebPrice) * 100 : 0;
