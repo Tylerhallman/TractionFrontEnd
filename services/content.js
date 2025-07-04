@@ -160,8 +160,9 @@ module.exports = {
             throw err;
         }
     },
-    getAsset:async (url) =>{
+    getAsset: async (url) => {
         const environment = await getEnvironment();
+
         async function assetExists(filename) {
             const assets = await environment.getAssets({
                 'fields.file.fileName': filename,
@@ -169,6 +170,7 @@ module.exports = {
             });
             return assets.items.length > 0 ? assets.items[0] : null;
         }
+
         const filename = url.split('/').pop();
         const contentType = url.endsWith('.png') ? 'image/png' :
             url.endsWith('.jpg') || url.endsWith('.jpeg') ? 'image/jpeg' :
@@ -198,21 +200,27 @@ module.exports = {
                 let processed = false;
                 while (!processed) {
                     asset = await environment.getAsset(asset.sys.id);
-                    processed = asset.fields.file['en-US'].url !== undefined;
+                    processed = asset.fields.file?.['en-US']?.url !== undefined;
                     if (!processed) await new Promise(r => setTimeout(r, 1000));
                 }
 
                 await asset.publish();
+            } else {
+                if (!asset.sys.publishedVersion) {
+                    await asset.processForLocale('en-US');
+                    await asset.publish();
+                }
             }
 
-            asset = {
+            asset = await environment.getAsset(asset.sys.id);
+
+            return {
                 sys: {
                     type: 'Link',
                     linkType: 'Asset',
                     id: asset.sys.id,
                 },
             };
-            return asset
         } catch (error) {
             console.error(`❌ Failed to create or find asset from URL (${url}):`, error.message);
         }
