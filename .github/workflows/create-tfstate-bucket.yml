@@ -1,0 +1,32 @@
+name: Create bucket for terraform tfstate
+on:
+  workflow_call:
+    secrets:
+        AWS_ACCESS_KEY_ID:
+          required: true
+        AWS_SECRET_ACCESS_KEY:
+          required: true
+        AWS_REGION: 
+          required: true
+
+  workflow_dispatch:
+
+jobs:
+  create-bucket:
+    runs-on: ubuntu-latest 
+    steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    - name: Get repo name
+      run: |
+        echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
+
+    - name: Create S3 bucket if it doesn't exist
+      id: create_s3_bucket
+      run: |
+        aws s3api head-bucket --bucket "${{ env.REPO_NAME }}-terraform-tfstate" || aws s3api create-bucket --bucket "${{ env.REPO_NAME }}-terraform-tfstate" --region ${{ secrets.AWS_REGION }} --create-bucket-configuration LocationConstraint=${{ secrets.AWS_REGION }}
