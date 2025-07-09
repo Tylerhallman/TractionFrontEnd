@@ -254,7 +254,9 @@ module.exports = {
 
             const products = await productService.getProducts({
                 user_id: store,
-                status: config.PRODUCT_STATUSES.ACTIVE
+                status: config.PRODUCT_STATUSES.ACTIVE,
+                lightspeed_status:'in stock',
+                is_math:true
             });
 
             const vendors = products
